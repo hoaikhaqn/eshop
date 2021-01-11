@@ -1,20 +1,20 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, IndexRoute, Switch, Route, Link } from "react-router-dom";
-import * as firebase from "../../firebase";
-
+import firebase from "../../firebase.js";
+import Loading from "../Loading";
 import routes from '../../constants/routes';
 import Header from '../Header';
 import Footer from '../Footer';
-import '../../assets/styles/style.css';
 
+import '../../assets/styles/all.scss';
 function App(props) {
+  const [firebaseInitialized,setFirebaseInitialized] = useState(false)
 
-  firebase.default.getDataCollection("users").then((data)=>{
-    console.log("App",data);
-  });
+  useEffect(()=>{
+    firebase.isInitialized().then(val=>setFirebaseInitialized(val))
+  })
 
-
-  return (
+  return firebaseInitialized !== false ? (
     <Router>
       <Header />
       <Switch>
@@ -26,7 +26,7 @@ function App(props) {
       </Switch>
       <Footer />
     </Router>
-  );
+  ): <Loading />
 }
 
 export default App;

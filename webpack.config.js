@@ -8,19 +8,14 @@ module.exports = {
         filename: 'bundle.js'
     },
     module: {
-        rules: [
-            {
+        rules: [{
                 use: 'babel-loader',
                 test: /\.js[x]?$/,
-                exclude: '/node_modules'
+                exclude: '/node_modules',
             },
             {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            },
-            {
-                test: /\.scss$/i,
-                use: 'sass-loader',
+                test: /\.(css|s[ac]ss)$/i,
+                loader: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
             },
             {
                 test: /\.(woff2|eot|ttf)$/i,
@@ -40,7 +35,8 @@ module.exports = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: 'style.min.css',
+            filename: 'assets/css/style.css',
+
         })
     ],
     devServer: {

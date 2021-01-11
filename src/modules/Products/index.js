@@ -1,13 +1,9 @@
 import React from 'react';
 import Breadcrumb from '../Breadcrumb';
 import ProductList from './components/ProductList';
-import * as firebase from "../../firebase";
 
 function Products(props) {
     const crumbs = [{link:"/",label:"Home"},{label: "Category name"}];
-    firebase.default.getDataCollection("users").then((data) => {
-        console.log("Products",data);
-      });
     return (
         <div>
             <Breadcrumb crumbs={crumbs} />

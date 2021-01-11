@@ -1,0 +1,14 @@
+.form-validate{
+    width: 100%;
+    margin: 0;
+    .form-group{
+        margin-bottom: .75rem;
+        .form-control{
+            margin-bottom: 0;
+        }
+        .msg-err{
+            font-size: .75rem;
+            color: red;
+        }
+    }
+}

@@ -3,12 +3,8 @@ import MainMenu from './components/MainMenu';
 import Featured from './components/Featured';
 import Category from './components/Category';
 import ProductSlider from '../ProductSlider';
-import * as firebase from "../../firebase";
 
 function Home(props) {
-  firebase.default.getDataCollection("users").then((data) => {
-    console.log("Home",data);
-  });
   return (
     <div className="content">
       <MainMenu />

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, IndexRoute, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import firebase from "../../firebase.js";
 import Loading from "../Loading";
 import routes from '../../constants/routes';
 import Header from '../Header';
 import Footer from '../Footer';
+
+import "slick-carousel/slick/slick-theme.scss";
+import "slick-carousel/slick/slick.scss";
 
 import '../../assets/styles/all.scss';
 function App(props) {

@@ -1,19 +1,31 @@
-import React, {useState} from 'react';
-import { Prompt } from 'react-router-dom';
+import React, {useState,useEffect} from 'react';
+import { Prompt,Redirect } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import firebase from "../../firebase.js";
 
 import './style.scss';
 function Register(props) {
-    const [submited,setSubmited] = useState(false)
+    const [submited,setSubmited] = useState(false);
+    const [signUp,setSignUp] = useState(false)
     const { register, handleSubmit, watch, errors } = useForm();
 
     const onSubmit = async data => {
         setSubmited(true);
-        let profile = await firebase.signUp(data);
-        console.log(profile);
-        setSubmited(false);
+        let res = await firebase.signUp(data);
+        if(res.status){
+            alert("Đăng ký thành công!")
+            setSignUp(true);
+        }else{
+            alert("Đăng ký thất bại: "+res.errMsg)
+            setSubmited(false);
+        }
     };
+
+    if(signUp){
+        return (
+            <Redirect to="/login"/>
+        )
+    }
     
     return (
         <div className="login">

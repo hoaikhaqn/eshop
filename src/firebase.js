@@ -15,42 +15,40 @@ class Firebase {
         })
     }
     async signUp(doc) {
-        try {
-            var errorCode, errorMessage;
-            const {
-                username,
-                email,
-                password
-            } = doc;
-            await this.auth.createUserWithEmailAndPassword(email, password).catch((error) => {
-                errorCode = error.code;
-                errorMessage = error.message;
-            });
-            await this.auth.currentUser.updateProfile({
-                displayName: username
-            }).catch((error) => {
-                errorCode = error.code;
-                errorMessage = error.message;
-            })
-            if (errorCode) {
-                return {
-                    errCode: errorCode,
-                    errMsg: errorMessage
-                }
-            }
-            return false;
-        } catch (error) {
-
-        }
+        var res = { status: true };
+        const {
+            username,
+            email,
+            password
+        } = doc;
+        await this.auth.createUserWithEmailAndPassword(email, password).catch((error) => {
+            res.status = false;
+            res.errCode = error.code;
+            res.errMsg = error.message;
+        });
+        await this.auth.currentUser.updateProfile({
+            displayName: username
+        }).catch((error) => {
+            res.status = false;
+            res.errCode = error.code;
+            res.errMsg = error.message;
+        })
+        return res;
     }
-    signIn(doc) {
-        this.auth.signInWithEmailAndPassword(doc.email, doc.password).then((user) => {
-                console.log("Signed in", user);
-            })
-            .catch((error) => {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-            });
+    async signIn(doc) {
+        var res = { status: true };
+        await this.auth.signInWithEmailAndPassword(doc.email, doc.password).then((result) => {
+            res.result = {
+                username: result.user.displayName,
+                email: result.user.email,
+                refreshToken: result.user.refreshToken
+            };
+        }).catch((error) => {
+            res.status = false;
+            res.errCode = error.code;
+            res.errMsg = error.message;
+        })
+        return res;
     }
     getDataCollection(collectionName) {
         return new Promise(resolve => {

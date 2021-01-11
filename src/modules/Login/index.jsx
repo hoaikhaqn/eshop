@@ -1,15 +1,34 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
+import React, {useState} from 'react';
+import {Prompt, Link, Redirect} from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import firebase from "../../firebase.js";
-
+import {authenticate} from "../../constants/auth.js";
 import './style.scss';
 
 export default function Login(props) {
-    const { register, handleSubmit, errors } = useForm();
-    const onSubmit = data => {
-        // firebase.signIn(data);
+    const [submited,setSubmited] = useState(false);
+    const [signIn,setSignIn] = useState(false)
+    const { register, handleSubmit,watch, errors } = useForm();
+
+    const onSubmit = async data => {
+        setSubmited(true);
+        let res = await firebase.signIn(data);
+        if(res.status){
+            alert("Đăng nhập thành công!")
+            authenticate({...res.result})
+            setSignIn(true);
+
+        }else{
+            alert("Đăng nhập thất bại: "+res.errMsg)
+            setSubmited(false);
+        }
     };
+
+    if(signIn){
+        return (
+            <Redirect to="/"/>
+        )
+    }
 
     return (
         <div className="login">
@@ -36,8 +55,12 @@ export default function Login(props) {
                                 <div style={{marginBottom:"1rem"}}>
                                     <Link to="/register">Don't have an account yet?</Link>
                                 </div>
-                                <button className="btn">Login</button>
+                                <button className="btn" disabled={submited}>Login</button>
                             </form>
+                            <Prompt
+                                when={Object.keys(watch()).length > 0}
+                                message='Are you sure you want to leave ?'
+                            />
                         </div>
                     </div>
                 </div>

@@ -23,7 +23,7 @@ const routes = [{
 }, {
     path: '/category/:slug/:id',
     exact: true,
-    main: () => < Products />
+    main: (props) => < Products {...props}/>
 }, {
     path: '/product/:slug/:id',
     exact: true,

@@ -1,15 +1,15 @@
 import React from 'react';
-import ProductItem from '../../../ProductItem';
-const productArray = ['1', '1', '1', '1', '1', '1', '1', '1'];
+import ProductItem from '../../ProductItem';
+
 function ProductList(props) {
     return (
         <div className="list-product">
             <div className="row">
                 {
-                    productArray.map((el, key) => {
+                    props.list && props.list.map((product, key) => {
                         return (
                             <div key={key} className="col-12 col-sm-6 col-md-4">
-                                <ProductItem />
+                                <ProductItem data={product}/>
                             </div>
                         )
                     })

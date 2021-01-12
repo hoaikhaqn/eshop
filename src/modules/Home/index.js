@@ -2,19 +2,28 @@ import React, { useState, useEffect } from 'react';
 import CategoryList from './components/CategoryList';
 import Banner from './components/Banner';
 import Featured from './components/Featured';
-import Category from './components/Category';
+import CategoryPhotos from './components/CategoryPhotos';
 import ProductSlider from '../ProductSlider';
 import firebase from '../../firebase';
 
 function Home(props) {
   const [category, setCategory] = useState([]);
+  const [banner, setBanner] = useState([]);
   const [newProduct, setNewProduct] = useState([]);
   const [hotProduct, setHotProduct] = useState([]);
+  
 
   useState(async () => {
     let res = await firebase.getCollection("category")
     if (res.status == true) {
       setCategory(res.result)
+    }
+  }, [])
+
+  useState(async () => {
+    let res = await firebase.getCollection("banner")
+    if (res.status == true) {
+      setBanner(res.result)
     }
   }, [])
 
@@ -41,13 +50,15 @@ function Home(props) {
               <CategoryList list={category} />
             </div>
             <div className="col-md-8">
-              <Banner />
+              <div className="banner-wrapper" style={{height:"100%",backgroundColor:"#eee"}}>
+                <Banner list={banner}/>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <Featured />
-      <Category />
+      <CategoryPhotos list={category}/>
       <div className="featured-product">
         <div className="container">
           <ProductSlider list={hotProduct} heading="Hot Product" />

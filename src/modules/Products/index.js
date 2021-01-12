@@ -1,21 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../Breadcrumb';
-import ProductList from './components/ProductList';
+import ProductList from './components/ProductList.js';
+import firebase from '../../firebase';
 
 function Products(props) {
-    const crumbs = [{link:"/",label:"Home"},{label: "Category name"}];
+    const [products, setProducts] = useState([]);
+    const [crumb, setCrumb] = useState([])
+
+    useState( () => {
+        setCrumb([{ link: "/", label: "Home" }, { label: props.match.params.slug }])
+    }, [])
+
+    useState(async () => {
+        let res = await firebase.getCollection("products")
+        if (res.status == true) {
+            setProducts(res.result)
+        }
+    }, [])
+
     return (
         <div>
-            <Breadcrumb crumbs={crumbs} />
+            <Breadcrumb crumbs={crumb} />
             <div className="product-view">
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-9">
+                        <div className="col-12">
                             <div className="product-view-top">
                                 <div className="row">
-                                    <div className="col-md-4">
+                                <div className="col-md-4">
                                         <div className="product-search">
-                                            <input type="email" defaultValue="Search" />
+                                            <input type="email" placeholder="Search" />
                                             <button><i className="fa fa-search" /></button>
                                         </div>
                                     </div>
@@ -52,10 +66,10 @@ function Products(props) {
                                     </div>
                                 </div>
                             </div>
-                            <ProductList />
+                            <ProductList list={products}/>
                         </div>
                         {/* Side Bar Start */}
-                        <div className="col-lg-3 sidebar">
+                        {/* <div className="col-lg-3 sidebar">
                             <div className="sidebar-widget category">
                                 <h2 className="title">Category</h2>
                                 <nav className="navbar bg-light">
@@ -104,7 +118,7 @@ function Products(props) {
                                 <a href="#">orci luctus</a>
                                 <a href="#">Nam lorem</a>
                             </div>
-                        </div>
+                        </div> */}
                         {/* Side Bar End */}
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Slider from "react-slick";
+import { formatCurrency } from '../../../utils';
 
 const SettingsSlider1 = {
     dots: false,
@@ -31,37 +32,30 @@ function ProductInfo(props) {
                             ref={slider => setNav1(slider)}
                         >
                             <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
                         </Slider>
                         <Slider className="product-slider-single-nav normal-slider"
                             {...SettingsSlider2}
                             asNavFor={nav1}
                             ref={slider => setNav2(slider)}
                         >
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
-                            <img src="https://picsum.photos/300" alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            <img src={data.images && data.images[0]} alt="Product Image" />
                         </Slider>
                     </div>
                     <div className="col-md-7">
                         <div className="product-content">
                             <div className="title"><h2>{data.name}</h2></div>
-                            <div className="ratting">
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                            </div>
                             <div className="price">
                                 <h4>Price:</h4>
-                                <p>$99 <span>$149</span></p>
+                                <p>{formatCurrency(data.discount)}<span>{formatCurrency(data.price)}</span></p>
                             </div>
                             <div className="quantity">
                                 <h4>Quantity:</h4>
@@ -74,18 +68,21 @@ function ProductInfo(props) {
                             <div className="p-size">
                                 <h4>Size:</h4>
                                 <div className="btn-group btn-group-sm">
-                                    <button type="button" className="btn">S</button>
-                                    <button type="button" className="btn">M</button>
-                                    <button type="button" className="btn">L</button>
-                                    <button type="button" className="btn">XL</button>
+                                    {
+                                        data.size && data.size.map((item, key) => {
+                                            return <button key={key} type="button" className="btn">{item}</button>
+                                        })
+                                    }
                                 </div>
                             </div>
                             <div className="p-color">
                                 <h4>Color:</h4>
                                 <div className="btn-group btn-group-sm">
-                                    <button type="button" className="btn">White</button>
-                                    <button type="button" className="btn">Black</button>
-                                    <button type="button" className="btn">Blue</button>
+                                    {
+                                        data.color && data.color.map((item, key) => {
+                                            return <button key={key} type="button" className="btn">{item}</button>
+                                        })
+                                    }
                                 </div>
                             </div>
                             <div className="action">
@@ -102,17 +99,16 @@ function ProductInfo(props) {
                         <li className="nav-item">
                             <a className="nav-link active" data-toggle="pill" href="#description">Description</a>
                         </li>
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <a className="nav-link" data-toggle="pill" href="#specification">Specification</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" data-toggle="pill" href="#reviews">Reviews (1)</a>
-                        </li>
+                        </li> */}
                     </ul>
                     <div className="tab-content">
                         <div id="description" className="container tab-pane active">
-                            <h4>Product description</h4>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In condimentum quam ac mi viverra dictum. In efficitur ipsum diam, at dignissim lorem tempor in. Vivamus tempor hendrerit finibus. Nulla tristique viverra nisl, sit amet bibendum ante suscipit non. Praesent in faucibus tellus, sed gravida lacus. Vivamus eu diam eros. Aliquam et sapien eget arcu rhoncus scelerisque. Suspendisse sit amet neque neque. Praesent suscipit et magna eu iaculis. Donec arcu libero, commodo ac est a, malesuada finibus dolor. Aenean in ex eu velit semper fermentum. In leo dui, aliquet sit amet eleifend sit amet, varius in turpis. Maecenas fermentum ut ligula at consectetur. Nullam et tortor leo.</p>
+                            {data.description}
                         </div>
                         <div id="specification" className="container tab-pane fade">
                             <h4>Product specification</h4>

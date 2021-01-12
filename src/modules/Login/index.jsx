@@ -39,7 +39,7 @@ export default function Login(props) {
                             <form id="frmLogin" onSubmit={handleSubmit(onSubmit)}>
                                 <div className="form-group">
                                     <label>E-mail</label>
-                                    <input name="email" defaultValue="hoaikhaqn1996@gmail.com" className={`form-control ${errors && errors.email ? 'is-invalid' : ''}`} type="text" ref={register({ required: true })} />
+                                    <input name="email" className={`form-control ${errors && errors.email ? 'is-invalid' : ''}`} type="text" ref={register({ required: true })} />
                                     {errors.email && <span className="msg-err">This field is required</span>}
                                 </div>
                                 <div className="form-group">

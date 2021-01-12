@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import firebase from "../../firebase.js";
 import Loading from "../Loading";
 import routes from '../../constants/routes';
@@ -18,7 +18,7 @@ function App(props) {
   })
 
   return firebaseInitialized !== false ? (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Header />
       <Switch>
         {

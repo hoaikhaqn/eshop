@@ -5,35 +5,38 @@ import ProductInfo from './components/ProductInfo.js';
 import ProductSlider from '../ProductSlider';
 import firebase from '../../firebase';
 
-const crumbs = [{ link: "/", label: "Home" }, { link: "/category/a/1", label: "Category name" }, { label: "Product name" }];
-
-
 function ProductDetail(props) {
-    const [DataProduct, setDataProduct] = useState(null)
-    const [crumb, setCrumb] = useState(null)
+    const [dataProduct, setDataProduct] = useState(null)
+    const [crumb, setCrumb] = useState([])
 
     useEffect(async () => {
         let idProduct = props.match.params.id;
         let res = await firebase.getDocument("products", idProduct)
         if (res.status) {
             setDataProduct(res.result)
+            setCrumb([{ link: "/", label: "Home" }, { link: `/category/category-name/${res.result.categoryID}`, label: 'Category name' }, { label: res.result.name }])
         }
     }, [])
+    
+    // useState( () => {
+    //     console.log("a",dataProduct);
+    //     if(dataProduct) 
+    // }, [dataProduct])
 
     return (
         <div>
-            <Breadcrumb crumbs={crumbs} />
+            <Breadcrumb crumbs={crumb} />
             <div className="product-detail">
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-9">
-                            <ProductInfo data={DataProduct || {}} />
+                        <div className="col-12">
+                            <ProductInfo data={dataProduct || {}} />
                             <div className="related-products">
                                 {/* <ProductSlider heading="Related Products" /> */}
                             </div>
                         </div>
                         {/* Side Bar Start */}
-                        <div className="col-lg-3 sidebar">
+                        {/* <div className="col-lg-3 sidebar">
                             <div className="sidebar-widget category">
                                 <h2 className="title">Category</h2>
                                 <nav className="navbar bg-light">
@@ -82,7 +85,7 @@ function ProductDetail(props) {
                                 <a href="#">orci luctus</a>
                                 <a href="#">Nam lorem</a>
                             </div>
-                        </div>
+                        </div> */}
                         {/* Side Bar End */}
                     </div>
                 </div>

@@ -11,10 +11,10 @@ import "slick-carousel/slick/slick.scss";
 
 import '../../assets/styles/all.scss';
 function App(props) {
-  const [firebaseInitialized,setFirebaseInitialized] = useState(false)
+  const [firebaseInitialized, setFirebaseInitialized] = useState(false)
 
-  useEffect(()=>{
-    firebase.isInitialized().then(val=>setFirebaseInitialized(val))
+  useEffect(() => {
+    firebase.isInitialized().then(val => setFirebaseInitialized(val))
   })
 
   return firebaseInitialized !== false ? (
@@ -23,13 +23,13 @@ function App(props) {
       <Switch>
         {
           routes.map((route, index) => {
-            return <Route key={index} path={route.path} exact={route.exact} component={route.main} />
+            return <Route key={index} path={route.path} exact={route.exact} component={props => route.main(props)} />
           })
         }
       </Switch>
       <Footer />
     </Router>
-  ): <Loading />
+  ) : <Loading />
 }
 
 export default App;

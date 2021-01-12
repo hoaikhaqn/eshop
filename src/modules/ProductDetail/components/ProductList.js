@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductItem from '../../../ProductItem';
+import ProductItem from '../ProductItem';
 const productArray = ['1', '1', '1', '1', '1', '1', '1', '1'];
 function ProductList(props) {
     return (

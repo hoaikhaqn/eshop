@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Slider from "react-slick";
 import ProductItem from '../ProductItem';
 
-const productArray = ['1', '1', '1', '1', '1', '1', '1', '1'];
 const SliderSettings = {
     autoplay: true,
     infinite: true,
@@ -36,27 +35,26 @@ const SliderSettings = {
         },
     ]
 }
-class ProductSlider extends Component {
-    render() {
-        return (
-            <div className="product product-slider" >
-                <div className="section-header">
-                    <h1>{this.props.heading}</h1>
-                </div>
-                <Slider className="row align-items-center product-slider" {...SliderSettings}>
-                    {
-                        productArray.map((el, key) => {
-                            return (
-                                <div key={key} className="col-12">
-                                    <ProductItem />
-                                </div>
-                            )
-                        })
-                    }
-                </Slider>
+
+function ProductSlider(props) {
+    return (
+        <div className="product product-slider" >
+            <div className="section-header">
+                <h1>{props.heading}</h1>
             </div>
-        );
-    }
+            <Slider className="row align-items-center product-slider" {...SliderSettings}>
+                {
+                    props.list.map((product, key) => {
+                        return (
+                            <div key={key} className="col-12">
+                                <ProductItem data={product} />
+                            </div>
+                        )
+                    })
+                }
+            </Slider>
+        </div>
+    );
 }
 
 export default ProductSlider;

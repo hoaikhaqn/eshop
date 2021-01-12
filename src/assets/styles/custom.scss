@@ -1,12 +1,26 @@
-.form-validate{
+.btn {
+    .loading-button {
+        display: flex;
+        align-items: center;
+
+        &>span {
+            margin-right: 10px;
+        }
+    }
+}
+
+.form-validate {
     width: 100%;
     margin: 0;
-    .form-group{
+
+    .form-group {
         margin-bottom: .75rem;
-        .form-control{
+
+        .form-control {
             margin-bottom: 0;
         }
-        .msg-err{
+
+        .msg-err {
             font-size: .75rem;
             color: red;
         }

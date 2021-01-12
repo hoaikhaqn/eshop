@@ -29,28 +29,28 @@ module.exports = {
     },
     module: {
         rules: [{
-            use: 'babel-loader',
-            test: /\.js[x]?$/,
-            exclude: '/node_modules',
-        },
-        {
-            test: /\.(css|s[ac]ss)$/i,
-            loader: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-        },
-        {
-            test: /\.(woff|woff2|eot|ttf)$/i,
-            loader: 'file-loader',
-            options: {
-                outputPath: 'assets/fonts',
+                use: 'babel-loader',
+                test: /\.js[x]?$/,
+                exclude: '/node_modules',
             },
-        },
-        {
-            test: /\.(png|jpe?g|gif|svg)$/i,
-            loader: 'file-loader',
-            options: {
-                outputPath: 'assets/images',
+            {
+                test: /\.(css|s[ac]ss)$/i,
+                loader: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
             },
-        }
+            {
+                test: /\.(woff|woff2|eot|ttf)$/i,
+                loader: 'file-loader',
+                options: {
+                    outputPath: 'assets/fonts',
+                },
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                loader: 'file-loader',
+                options: {
+                    outputPath: 'assets/images',
+                },
+            }
         ]
     },
     plugins: [
@@ -60,7 +60,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             favicon: './public/favicon.ico',
-            // publicPath: '/',
+            publicPath: '/',
             template: './public/index.html'
         })
     ],

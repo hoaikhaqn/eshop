@@ -1,32 +1,31 @@
-import React, {useState} from 'react';
-import {Prompt, Link, Redirect} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Prompt, Link, Redirect, useHistory } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import firebase from "../../firebase.js";
-import {authenticate} from "../../constants/auth.js";
+import { getUserProfile, authenticate } from "../../constants/auth.js";
 import './style.scss';
 
 export default function Login(props) {
-    const [submited,setSubmited] = useState(false);
-    const [signIn,setSignIn] = useState(false)
-    const { register, handleSubmit,watch, errors } = useForm();
+    const history = useHistory();
+    const [submited, setSubmited] = useState(false);
+    const { register, handleSubmit, watch, errors } = useForm();
 
     const onSubmit = async data => {
         setSubmited(true);
         let res = await firebase.signIn(data);
-        if(res.status){
+        if (res.status) {
             alert("Đăng nhập thành công!")
-            authenticate({...res.result})
-            setSignIn(true);
-
-        }else{
-            alert("Đăng nhập thất bại: "+res.errMsg)
+            authenticate({ ...res.result })
+            history.push('/');
+        } else {
+            alert("Đăng nhập thất bại: " + res.errMsg)
             setSubmited(false);
         }
     };
 
-    if(signIn){
+    if (!!getUserProfile()) {
         return (
-            <Redirect to="/"/>
+            <Redirect to="/" />
         )
     }
 
@@ -40,7 +39,7 @@ export default function Login(props) {
                             <form id="frmLogin" onSubmit={handleSubmit(onSubmit)}>
                                 <div className="form-group">
                                     <label>E-mail</label>
-                                    <input name="email" className={`form-control ${errors && errors.email ? 'is-invalid' : ''}`} type="text" ref={register({ required: true })} />
+                                    <input name="email" defaultValue="hoaikhaqn1996@gmail.com" className={`form-control ${errors && errors.email ? 'is-invalid' : ''}`} type="text" ref={register({ required: true })} />
                                     {errors.email && <span className="msg-err">This field is required</span>}
                                 </div>
                                 <div className="form-group">
@@ -52,13 +51,15 @@ export default function Login(props) {
                                     <input type="checkbox" className="custom-control-input" id="newaccount" />
                                     <label className="custom-control-label" htmlFor="newaccount">Keep me signed in</label>
                                 </div>
-                                <div style={{marginBottom:"1rem"}}>
+                                <div style={{ marginBottom: "1rem" }}>
                                     <Link to="/register">Don't have an account yet?</Link>
                                 </div>
-                                <button className="btn" disabled={submited}>Login</button>
+                                <button className="btn btn-register" type="submit" disabled={submited}>
+                                    {submited ? <span className="loading-button"><span className="spinner-border spinner-border-sm"></span>Loading...</span> : 'Login'}
+                                </button>
                             </form>
                             <Prompt
-                                when={Object.keys(watch()).length > 0}
+                                when={Object.keys(watch()).length > 0 && !submited}
                                 message='Are you sure you want to leave ?'
                             />
                         </div>

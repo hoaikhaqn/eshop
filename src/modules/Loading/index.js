@@ -4,7 +4,7 @@ import './style.scss'
 function Loading() {
     return (
         <div id="loading">
-            <img src={loadingGif} alt="loading" />
+            <img src={`/${loadingGif}`} alt="loading" />
         </div>
     );
 }

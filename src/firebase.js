@@ -14,8 +14,15 @@ class Firebase {
             this.auth.onAuthStateChanged(resolved)
         })
     }
+    onAuthChanged(setUsername) {
+        this.auth.onAuthStateChanged((user) => {
+            setUsername(user || {})
+        })
+    }
     async signUp(doc) {
-        var res = { status: true };
+        var res = {
+            status: true
+        };
         const {
             username,
             email,
@@ -36,7 +43,9 @@ class Firebase {
         return res;
     }
     async signIn(doc) {
-        var res = { status: true };
+        var res = {
+            status: true
+        };
         await this.auth.signInWithEmailAndPassword(doc.email, doc.password).then((result) => {
             res.result = {
                 username: result.user.displayName,
@@ -50,7 +59,18 @@ class Firebase {
         })
         return res;
     }
-    getDataCollection(collectionName) {
+    async signOut() {
+        var res = {
+            status: true
+        };
+        await this.auth.signOut().catch((error) => {
+            res.status = false;
+            res.errCode = error.code;
+            res.errMsg = error.message;
+        })
+        return res;
+    }
+    getCollection(collectionName) {
         return new Promise(resolve => {
             let api = this.db.collection(collectionName)
             api.onSnapshot(function (snapshot) {
@@ -61,8 +81,43 @@ class Firebase {
                         id: doc.id
                     });
                 });
-                resolve(data);
+                resolve({
+                    status: true,
+                    result: data
+                })
             });
+        })
+    }
+    getDocument(collectionName, id) {
+        return new Promise(resolve => {
+            this.db.collection(collectionName).doc(id).get().then(doc => {
+                console.log({
+                    id: doc.id,
+                    ...doc.data()
+                });
+
+                resolve({
+                    status: true,
+                    result: {
+                        id: doc.id,
+                        ...doc.data()
+                    }
+                })
+            });
+        })
+    }
+    setDocument(collection, id, data, cb) {
+        return new Promise(resolve => {
+            this.db
+                .collection(collection)
+                .doc(id)
+                .set(data)
+                .then(function () {
+                    resolve()
+                })
+                .catch(function (error) {
+                    cb && cb(false);
+                });
         })
     }
 }

@@ -1,32 +1,33 @@
-import React, {useState,useEffect} from 'react';
-import { Prompt,Redirect } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Prompt, Redirect, useHistory } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import firebase from "../../firebase.js";
+import { getUserProfile } from "../../constants/auth.js";
 
 import './style.scss';
 function Register(props) {
-    const [submited,setSubmited] = useState(false);
-    const [signUp,setSignUp] = useState(false)
+    const history = useHistory();
+    const [submited, setSubmited] = useState(false);
     const { register, handleSubmit, watch, errors } = useForm();
 
     const onSubmit = async data => {
         setSubmited(true);
         let res = await firebase.signUp(data);
-        if(res.status){
+        if (res.status) {
             alert("Đăng ký thành công!")
-            setSignUp(true);
-        }else{
-            alert("Đăng ký thất bại: "+res.errMsg)
+            history.push('/login');
+        } else {
+            alert("Đăng ký thất bại: " + res.errMsg)
             setSubmited(false);
         }
     };
 
-    if(signUp){
+    if (!!getUserProfile()) {
         return (
-            <Redirect to="/login"/>
+            <Redirect to="/" />
         )
     }
-    
+
     return (
         <div className="login">
             <div className="container">
@@ -81,12 +82,14 @@ function Register(props) {
                                         {errors.re_password && <span className="msg-err">{errors.re_password.message}</span>}
                                     </div>
                                     <div className="col-12">
-                                        <button className="btn btn-register" type="submit" disabled={submited}>Register</button>
+                                        <button className="btn btn-register" type="submit" disabled={submited}>
+                                            {submited ? <span className="loading-button"><span className="spinner-border spinner-border-sm"></span>Loading...</span> : 'Register'}
+                                        </button>
                                     </div>
                                 </div>
                             </form>
                             <Prompt
-                                when={Object.keys(watch()).length > 0}
+                                when={Object.keys(watch()).length > 0 && !submited}
                                 message='Are you sure you want to leave ?'
                             />
                         </div>

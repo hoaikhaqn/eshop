@@ -3,20 +3,60 @@ import Breadcrumb from '../Breadcrumb';
 import ProductList from './components/ProductList.js';
 import firebase from '../../firebase';
 
+import { toCapitalize } from '../../utils';
+
 function Products(props) {
+    const [category, setCategory] = useState([]);
     const [products, setProducts] = useState([]);
     const [crumb, setCrumb] = useState([])
 
-    useState( () => {
-        setCrumb([{ link: "/", label: "Home" }, { label: props.match.params.slug }])
+    useEffect(() => {
+        console.log("HEllo");
+
+        async function fetchData() {
+            if (props.match.params.id) {
+                let categoryID = props.match.params.id;
+
+                let res1 = await firebase.getProductsByCategory("products", categoryID)
+                if (res1.status == true) {
+                    setProducts(res1.result)
+                }
+
+                let res2 = await firebase.getDocument("category", categoryID)
+                if (res2.status == true) {
+                    setCategory(res2.result)
+                }
+            }
+            if (props.match.params.special) {
+                let res = await firebase.getCollection("products")
+                if (res.status == true) {
+                    setProducts(res.result)
+                }
+            }
+        }
+        fetchData();
     }, [])
 
-    useState(async () => {
-        let res = await firebase.getCollection("products")
-        if (res.status == true) {
-            setProducts(res.result)
+    useEffect(() => {
+        async function fetchData() {
+            if (props.match.params.keyword) {
+                let keyword = props.match.params.keyword;
+
+                let res = await firebase.getProductsByKeyword("products", keyword)
+                console.log(res);
+
+                if (res.status == true) {
+                    setProducts(res.result)
+                }
+            }
         }
-    }, [])
+        fetchData();
+    }, [props.match.params.keyword])
+
+
+    useEffect(() => {
+        setCrumb([{ link: "/", label: "Home" }, { label: toCapitalize(category.name || props.match.params.special || props.match.params.keyword) }])
+    }, [category])
 
     return (
         <div>
@@ -27,7 +67,7 @@ function Products(props) {
                         <div className="col-12">
                             <div className="product-view-top">
                                 <div className="row">
-                                <div className="col-md-4">
+                                    <div className="col-md-4">
                                         <div className="product-search">
                                             <input type="email" placeholder="Search" />
                                             <button><i className="fa fa-search" /></button>
@@ -66,7 +106,7 @@ function Products(props) {
                                     </div>
                                 </div>
                             </div>
-                            <ProductList list={products}/>
+                            <ProductList list={products} />
                         </div>
                         {/* Side Bar Start */}
                         {/* <div className="col-lg-3 sidebar">

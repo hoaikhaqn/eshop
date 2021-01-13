@@ -11,7 +11,7 @@ import Notfound404 from '../modules/Notfound404';
 const routes = [{
     path: '/',
     exact: true,
-    main: () => < Home />
+    main: (props) => < Home  {...props}/>
 }, {
     path: '/login',
     exact: true,
@@ -22,6 +22,14 @@ const routes = [{
     main: () => < Register />
 }, {
     path: '/category/:slug/:id',
+    exact: true,
+    main: (props) => < Products {...props}/>
+}, {
+    path: '/:special',
+    exact: true,
+    main: (props) => < Products {...props}/>
+}, {
+    path: '/search/:keyword',
     exact: true,
     main: (props) => < Products {...props}/>
 }, {

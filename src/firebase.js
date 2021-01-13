@@ -88,6 +88,25 @@ class Firebase {
             });
         })
     }
+    getProductsByKeyword(collectionName, keyword) {
+        return new Promise(resolve => {
+            let api = this.db.collection(collectionName)
+                .orderBy('name').startAt(keyword).endAt(keyword + '\uf8ff')
+            api.onSnapshot(function (snapshot) {
+                const data = [];
+                snapshot.docs.forEach(doc => {
+                    data.push({
+                        ...doc.data(),
+                        id: doc.id
+                    });
+                });
+                resolve({
+                    status: true,
+                    result: data
+                })
+            });
+        })
+    }
     getDocument(collectionName, id) {
         return new Promise(resolve => {
             this.db.collection(collectionName).doc(id).get().then(doc => {
@@ -106,18 +125,24 @@ class Firebase {
             });
         })
     }
-    setDocument(collection, id, data, cb) {
+    getProductsByCategory(collectionName, id) {
         return new Promise(resolve => {
-            this.db
-                .collection(collection)
-                .doc(id)
-                .set(data)
-                .then(function () {
-                    resolve()
-                })
-                .catch(function (error) {
-                    cb && cb(false);
+            let api = this.db.collection(collectionName)
+                .where("categoryID", "==", id);
+
+            api.onSnapshot(function (snapshot) {
+                const data = [];
+                snapshot.docs.forEach(doc => {
+                    data.push({
+                        ...doc.data(),
+                        id: doc.id
+                    });
                 });
+                resolve({
+                    status: true,
+                    result: data
+                })
+            });
         })
     }
 }

@@ -28,7 +28,7 @@ function Home(props) {
   }, [])
 
   useState(async () => {
-    let res = await firebase.getCollection("products")
+    let res = await firebase.getProductsOrderBy("sold","desc")
     if (res.status == true) {
       setHotProduct(res.result)
     }

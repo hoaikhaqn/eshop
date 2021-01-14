@@ -110,11 +110,6 @@ class Firebase {
     getDocument(collectionName, id) {
         return new Promise(resolve => {
             this.db.collection(collectionName).doc(id).get().then(doc => {
-                console.log({
-                    id: doc.id,
-                    ...doc.data()
-                });
-
                 resolve({
                     status: true,
                     result: {
@@ -130,6 +125,25 @@ class Firebase {
             let api = this.db.collection(collectionName)
                 .where("categoryID", "==", id);
 
+            api.onSnapshot(function (snapshot) {
+                const data = [];
+                snapshot.docs.forEach(doc => {
+                    data.push({
+                        ...doc.data(),
+                        id: doc.id
+                    });
+                });
+                resolve({
+                    status: true,
+                    result: data
+                })
+            });
+        })
+    }
+    getProductsOrderBy(prop,type) {
+        return new Promise(resolve => {
+            let api = this.db.collection("products")
+                .orderBy(prop,type)
             api.onSnapshot(function (snapshot) {
                 const data = [];
                 snapshot.docs.forEach(doc => {

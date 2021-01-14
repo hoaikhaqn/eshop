@@ -6,13 +6,14 @@ import firebase from '../../firebase';
 import { toCapitalize } from '../../utils';
 
 function Products(props) {
-    const [category, setCategory] = useState([]);
+    const [sortby, setSortby] = useState({value:"",text:"Sort by"});
+    const [lastCrumb, setLastCrumb] = useState([]);
     const [products, setProducts] = useState([]);
     const [crumb, setCrumb] = useState([])
 
+    // Category page
     useEffect(() => {
-        console.log("HEllo");
-
+        // Get Data
         async function fetchData() {
             if (props.match.params.id) {
                 let categoryID = props.match.params.id;
@@ -24,39 +25,101 @@ function Products(props) {
 
                 let res2 = await firebase.getDocument("category", categoryID)
                 if (res2.status == true) {
-                    setCategory(res2.result)
-                }
-            }
-            if (props.match.params.special) {
-                let res = await firebase.getCollection("products")
-                if (res.status == true) {
-                    setProducts(res.result)
+                    setLastCrumb(res2.result.name)
                 }
             }
         }
         fetchData();
     }, [])
 
+    // Search page
     useEffect(() => {
         async function fetchData() {
             if (props.match.params.keyword) {
                 let keyword = props.match.params.keyword;
 
                 let res = await firebase.getProductsByKeyword("products", keyword)
-                console.log(res);
 
                 if (res.status == true) {
                     setProducts(res.result)
+                    setLastCrumb(props.match.params.keyword)
                 }
             }
         }
         fetchData();
     }, [props.match.params.keyword])
 
-
+    // Special page
     useEffect(() => {
-        setCrumb([{ link: "/", label: "Home" }, { label: toCapitalize(category.name || props.match.params.special || props.match.params.keyword) }])
-    }, [category])
+        // Get Data
+        async function fetchData() {
+            let special = props.match.params.special;
+            if (special) {
+                if (special == 'best-seller') {
+                    let res = await firebase.getProductsOrderBy("sold", "desc")
+                    if (res.status == true) {
+                        setProducts(res.result)
+                        setLastCrumb(props.match.params.special)
+                    }
+                }
+                if (special == 'promotional') {
+                    let res = await firebase.getProductsOrderBy("discount", "asc")
+                    if (res.status == true) {
+                        setProducts(res.result)
+                        setLastCrumb(props.match.params.special)
+                    }
+                }
+            }
+        }
+        fetchData();
+    }, [])
+
+
+    // All products
+    useEffect(() => {
+        // Get Data
+        async function fetchData() {
+            if (!props.match.params.id && !props.match.params.special && !props.match.params.keyword) {
+                let res = await firebase.getCollection("products")
+                if (res.status == true) {
+                    setProducts(res.result)
+                    setLastCrumb('Products')
+                }
+            }
+        }
+        fetchData();
+    }, [])
+
+    // Set crumbs
+    useEffect(() => {
+        setCrumb([{ link: "/", label: "Home" }, { label: toCapitalize(lastCrumb) }])
+    }, [lastCrumb])
+
+    const onHandleSort = async (value) => {
+        if(sortby.value != value){
+            let res;
+            switch (value) {
+                case "new": {
+                    res = await firebase.getProductsOrderBy("postAt")
+                    setSortby({value,text:"Newest"})
+                    break;
+                }
+                case "popular": {
+                    res = await firebase.getProductsOrderBy("sold", "desc")
+                    setSortby({value,text:"Popular"})
+                    break;
+                }
+                case "cheap": {
+                    res = await firebase.getProductsOrderBy("discount", "asc")
+                    setSortby({value,text:"Most sale"})
+                    break;
+                }
+            }
+            if (res.status == true) {
+                setProducts(res.result)
+            }
+        }
+    }
 
     return (
         <div>
@@ -66,41 +129,16 @@ function Products(props) {
                     <div className="row">
                         <div className="col-12">
                             <div className="product-view-top">
-                                <div className="row">
-                                    <div className="col-md-4">
-                                        <div className="product-search">
-                                            <input type="email" placeholder="Search" />
-                                            <button><i className="fa fa-search" /></button>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-4">
+                                <div className="row justify-content-end">
+                                    <div className="col-6 col-md-3 col-lg-2">
                                         <div className="product-short">
                                             <div className="dropdown">
-                                                <div className="dropdown-toggle" data-toggle="dropdown">Product short by</div>
-                                                <div className="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" className="dropdown-item">Newest</a>
-                                                    <a href="#" className="dropdown-item">Popular</a>
-                                                    <a href="#" className="dropdown-item">Most sale</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <div className="product-price-range">
-                                            <div className="dropdown">
-                                                <div className="dropdown-toggle" data-toggle="dropdown">Product price range</div>
-                                                <div className="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" className="dropdown-item">$0 to $50</a>
-                                                    <a href="#" className="dropdown-item">$51 to $100</a>
-                                                    <a href="#" className="dropdown-item">$101 to $150</a>
-                                                    <a href="#" className="dropdown-item">$151 to $200</a>
-                                                    <a href="#" className="dropdown-item">$201 to $250</a>
-                                                    <a href="#" className="dropdown-item">$251 to $300</a>
-                                                    <a href="#" className="dropdown-item">$301 to $350</a>
-                                                    <a href="#" className="dropdown-item">$351 to $400</a>
-                                                    <a href="#" className="dropdown-item">$401 to $450</a>
-                                                    <a href="#" className="dropdown-item">$451 to $500</a>
-                                                </div>
+                                                <div className="dropdown-toggle" data-toggle="dropdown">{sortby.text}</div>
+                                                <ul className="dropdown-menu dropdown-menu-right">
+                                                    {/* <li onClick={() => onHandleSort("new")} className="dropdown-item">Newest</li> */}
+                                                    <a style={{cursor:"pointer"}} onClick={() => onHandleSort("popular")} className={`dropdown-item ${sortby.value == "popular" ? 'active':''}`}>Popular</a>
+                                                    <a style={{cursor:"pointer"}} onClick={() => onHandleSort("cheap")} className={`dropdown-item ${sortby.value == "cheap" ? 'active':''}`}>Most sale</a>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>

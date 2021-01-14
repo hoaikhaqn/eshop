@@ -6,10 +6,10 @@ function CategoryList(props) {
         <nav className="navbar bg-light">
             <ul className="navbar-nav">
                 <li className="nav-item">
-                    <Link className="nav-link" to={`/best-seller`}><i className="fa fa-heart"></i>Best seller</Link>
+                    <Link className="nav-link" to={`products/best-seller`}><i className="fa fa-heart"></i>Best seller</Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" to={`/promotional`}><i className="fa fa-star"></i>Promotional</Link>
+                    <Link className="nav-link" to={`products/promotional`}><i className="fa fa-star"></i>Promotional</Link>
                 </li>
                 {
                     props.list.map((category, key) => {

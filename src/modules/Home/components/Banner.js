@@ -19,8 +19,8 @@ function Banner(props) {
                 props.list.map((item, key) => {
                     return (
                         <div key={key} className="header-slider-item">
-                            <Link to="/product/a/1">
-                                <div className="image-background" style={{backgroundImage:`url(${item.url})`,height:'400px',backgroundSize:'cover'}}></div>
+                            <Link to="/">
+                                <div className="image-background" style={{ backgroundImage: `url(${item.url})`, height: '400px', backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                                 {/* <img src={} alt="Slider Image" /> */}
                             </Link>
                         </div>

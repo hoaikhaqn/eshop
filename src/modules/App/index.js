@@ -12,7 +12,6 @@ import "slick-carousel/slick/slick.scss";
 import '../../assets/styles/all.scss';
 function App(props) {
   const [firebaseInitialized, setFirebaseInitialized] = useState(false)
-  console.log("asdaaa", props);
 
   useEffect(() => {
     firebase.isInitialized().then(val => setFirebaseInitialized(val))

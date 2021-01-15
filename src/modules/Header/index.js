@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import logo from '../../assets/images/logo.png';
 import TopBar from './components/TopBar';
 import NavBar from './components/NavBar.js';
+import {CounterContext} from '../../context';
 
 function Header(props) {
     const history = useHistory();
     const { register, handleSubmit, watch, errors } = useForm();
+    const count = useContext(CounterContext);
 
+    console.log("DAA",count);
+    
     const onSearch = data => {
         if (data.keyword) {
             history.push(`/search/${decodeURI(data.keyword)}`)

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Slider from "react-slick";
 import ProductItem from '../ProductItem';
+import Skeleton from 'react-loading-skeleton';
 
 const SliderSettings = {
     autoplay: true,
@@ -36,17 +37,20 @@ function ProductSlider(props) {
             <div className="section-header">
                 <h1>{props.heading}</h1>
             </div>
-            <Slider className="row align-items-center product-slider" {...SliderSettings}>
-                {
-                    props.list.map((product, key) => {
-                        return (
-                            <div key={key} className="col-12">
-                                <ProductItem data={product} />
-                            </div>
-                        )
-                    })
-                }
-            </Slider>
+            {
+                props.list ?
+                    <Slider className="row align-items-center product-slider" {...SliderSettings}>
+                        {props.list.map((product, key) => {
+                            return (
+                                <div key={key} className="col-12">
+                                    <ProductItem data={product} />
+                                </div>
+                            )
+                        })
+                        }
+                    </Slider>
+                : <Skeleton height={400} />
+            }
         </div>
     );
 }

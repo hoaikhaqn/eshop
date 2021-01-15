@@ -16,7 +16,7 @@ function Banner(props) {
     return (
         <Slider className="header-slider normal-slider" {...settings}>
             {
-                props.list.map((item, key) => {
+                props.list && props.list.map((item, key) => {
                     return (
                         <div key={key} className="header-slider-item">
                             <Link to="/">

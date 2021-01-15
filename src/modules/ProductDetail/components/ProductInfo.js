@@ -13,7 +13,7 @@ const SettingsSlider1 = {
 const SettingsSlider2 = {
     slidesToShow: 4,
     slidesToScroll: 1,
-    infinite:false,
+    infinite: false,
     dots: false,
     focusOnSelect: true
 };
@@ -43,7 +43,7 @@ function ProductInfo(props) {
                             ref={slider => setNav2(slider)}
                         >
                             {
-                                data.images && data.images.map((image,key)=>{
+                                data.images && data.images.map((image, key) => {
                                     return <img key={key} src={image} alt="Product Image" />
                                 }) || <Skeleton width={70} height={70} />
                             }
@@ -64,26 +64,32 @@ function ProductInfo(props) {
                                     <button className="btn-plus"><i className="fa fa-plus" /></button>
                                 </div>
                             </div>
-                            <div className="p-size">
-                                <h4>Size:</h4>
-                                <div className="btn-group btn-group-sm">
-                                    {
-                                        data.size && data.size.map((item, key) => {
-                                            return <button key={key} type="button" className="btn">{item}</button>
-                                        }) || <Skeleton width={150} />
-                                    }
-                                </div>
-                            </div>
-                            <div className="p-color">
-                                <h4>Color:</h4>
-                                <div className="btn-group btn-group-sm">
-                                    {
-                                        data.color && data.color.map((item, key) => {
-                                            return <button key={key} type="button" className="btn">{item}</button>
-                                        }) || <Skeleton width={150} />
-                                    }
-                                </div>
-                            </div>
+                            {
+                                data.size && (
+                                    <div className="p-size">
+                                        <h4>Size:</h4>
+                                        <div className="btn-group btn-group-sm">
+                                            {
+                                                data.size.map((item, key) => {
+                                                    return <button key={key} type="button" className="btn">{item}</button>
+                                                }) || <Skeleton width={150} />
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            {
+                                data.color && (<div className="p-color">
+                                    <h4>Color:</h4>
+                                    <div className="btn-group btn-group-sm">
+                                        {
+                                            data.color.map((item, key) => {
+                                                return <button key={key} type="button" className="btn">{item}</button>
+                                            }) || <Skeleton width={150} />
+                                        }
+                                    </div>
+                                </div>)
+                            }
                             <div className="action">
                                 <a className="btn" href="#"><i className="fa fa-shopping-cart" />Add to Cart</a>
                                 <a className="btn" href="#"><i className="fa fa-shopping-bag" />Buy Now</a>

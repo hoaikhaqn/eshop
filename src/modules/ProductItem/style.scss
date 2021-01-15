@@ -1,4 +1,4 @@
-.product-item {
+div.product-item {
     overflow: hidden;
 
     .product-image {
@@ -10,6 +10,20 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
+        }
+    }
+    .product-price{
+        position: relative;
+        top:-50px;
+        padding: 10px 0;
+        background-color: rgba(0,0,0,0.8);
+        text-align: center;
+        h3{
+            display:block;
+        }
+        .btn{
+            margin-top:12px;
+            float:none;
         }
     }
 }

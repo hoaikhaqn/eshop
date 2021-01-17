@@ -15,6 +15,8 @@ export default function Login(props) {
         let res = await firebase.signIn(data);
         if (res.status) {
             alert("Đăng nhập thành công!")
+            console.log(res.result);
+            
             authenticate({ ...res.result })
             history.push('/');
         } else {

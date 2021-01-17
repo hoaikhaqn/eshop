@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Slider from "react-slick";
+import Skeleton from 'react-loading-skeleton';
+import firebase from '../../../firebase.js';
 import { formatCurrency } from '../../../utils';
-
+import {getUserProfile} from '../../../constants/auth';
+import {CartContext} from '../../../contexts/CartContext'
 const SettingsSlider1 = {
     dots: false,
     infinite: true,
@@ -12,14 +15,29 @@ const SettingsSlider1 = {
 const SettingsSlider2 = {
     slidesToShow: 4,
     slidesToScroll: 1,
+    infinite: false,
     dots: false,
     focusOnSelect: true
 };
 function ProductInfo(props) {
+    const { data } = props;
     const [nav1, setNav1] = useState(null)
     const [nav2, setNav2] = useState(null)
-    const { data } = props;
-    console.log(props);
+
+    const {cart,setCart} = useContext(CartContext);
+    
+    const addCartItem = () =>{
+        let userProfile = JSON.parse(getUserProfile());
+        let newCart = [...cart];
+        newCart.push(data);
+        setCart(newCart);
+        firebase.addCartItem(userProfile.userId,newCart)
+    }
+
+    useEffect(()=>{
+        console.log(cart);
+        
+    },[cart])
 
     return (
         <div >
@@ -31,31 +49,30 @@ function ProductInfo(props) {
                             asNavFor={nav2}
                             ref={slider => setNav1(slider)}
                         >
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            {
+                                data.images && data.images.map((image, key) => {
+                                    return <img key={key} src={image} alt="Product Image" />
+                                }) || <Skeleton width={350} height={350} />
+                            }
                         </Slider>
                         <Slider className="product-slider-single-nav normal-slider"
                             {...SettingsSlider2}
                             asNavFor={nav1}
                             ref={slider => setNav2(slider)}
                         >
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
-                            <img src={data.images && data.images[0]} alt="Product Image" />
+                            {
+                                data.images && data.images.map((image, key) => {
+                                    return <img key={key} src={image} alt="Product Image" />
+                                }) || <Skeleton width={70} height={70} />
+                            }
                         </Slider>
                     </div>
                     <div className="col-md-7">
                         <div className="product-content">
-                            <div className="title"><h2>{data.name}</h2></div>
+                            <div className="title"><h2>{data.name || <Skeleton width={200} />}</h2></div>
                             <div className="price">
                                 <h4>Price:</h4>
-                                <p>{formatCurrency(data.discount)}<span>{formatCurrency(data.price)}</span></p>
+                                <p>{data.discount && formatCurrency(data.discount) || <Skeleton width={150} />}<span>{data.price && formatCurrency(data.price) || <Skeleton width={150} />}</span></p>
                             </div>
                             <div className="quantity">
                                 <h4>Quantity:</h4>
@@ -65,28 +82,34 @@ function ProductInfo(props) {
                                     <button className="btn-plus"><i className="fa fa-plus" /></button>
                                 </div>
                             </div>
-                            <div className="p-size">
-                                <h4>Size:</h4>
-                                <div className="btn-group btn-group-sm">
-                                    {
-                                        data.size && data.size.map((item, key) => {
-                                            return <button key={key} type="button" className="btn">{item}</button>
-                                        })
-                                    }
-                                </div>
-                            </div>
-                            <div className="p-color">
-                                <h4>Color:</h4>
-                                <div className="btn-group btn-group-sm">
-                                    {
-                                        data.color && data.color.map((item, key) => {
-                                            return <button key={key} type="button" className="btn">{item}</button>
-                                        })
-                                    }
-                                </div>
-                            </div>
+                            {
+                                data.size && (
+                                    <div className="p-size">
+                                        <h4>Size:</h4>
+                                        <div className="btn-group btn-group-sm">
+                                            {
+                                                data.size.map((item, key) => {
+                                                    return <button key={key} type="button" className="btn">{item}</button>
+                                                }) || <Skeleton width={150} />
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            {
+                                data.color && (<div className="p-color">
+                                    <h4>Color:</h4>
+                                    <div className="btn-group btn-group-sm">
+                                        {
+                                            data.color.map((item, key) => {
+                                                return <button key={key} type="button" className="btn">{item}</button>
+                                            }) || <Skeleton width={150} />
+                                        }
+                                    </div>
+                                </div>)
+                            }
                             <div className="action">
-                                <a className="btn" href="#"><i className="fa fa-shopping-cart" />Add to Cart</a>
+                                <a className="btn" onClick={()=>addCartItem()}><i className="fa fa-shopping-cart" />Add to Cart</a>
                                 <a className="btn" href="#"><i className="fa fa-shopping-bag" />Buy Now</a>
                             </div>
                         </div>
@@ -108,7 +131,7 @@ function ProductInfo(props) {
                     </ul>
                     <div className="tab-content">
                         <div id="description" className="container tab-pane active">
-                            {data.description}
+                            {data.description || <Skeleton count={5} />}
                         </div>
                         <div id="specification" className="container tab-pane fade">
                             <h4>Product specification</h4>

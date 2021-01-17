@@ -6,22 +6,30 @@ import ProductSlider from '../ProductSlider';
 import firebase from '../../firebase';
 
 function ProductDetail(props) {
+    const [category, setCategory] = useState([]);
     const [dataProduct, setDataProduct] = useState(null)
     const [crumb, setCrumb] = useState([])
 
-    useEffect(async () => {
-        let idProduct = props.match.params.id;
-        let res = await firebase.getDocument("products", idProduct)
-        if (res.status) {
-            setDataProduct(res.result)
-            setCrumb([{ link: "/", label: "Home" }, { link: `/category/category-name/${res.result.categoryID}`, label: 'Category name' }, { label: res.result.name }])
+    useEffect(() => {
+        async function fetchData() {
+            let idProduct = props.match.params.id;
+            let res1 = await firebase.getDocument("products", idProduct)
+            if (res1.status) {
+                setDataProduct(res1.result)
+            }
+            let categoryID = res1.result.categoryID;
+            let res2 = await firebase.getDocument("category", categoryID)
+            if (res2.status == true) {
+                setCategory(res2.result)
+            }
         }
+        fetchData()
     }, [])
-    
-    // useState( () => {
-    //     console.log("a",dataProduct);
-    //     if(dataProduct) 
-    // }, [dataProduct])
+
+    useEffect(() => {
+        if (category && dataProduct)
+            setCrumb([{ link: "/", label: "Home" }, { link: `/category/${category.slug}/${category.id}`, label: category.name }, { label: dataProduct.name }])
+    }, [dataProduct, category])
 
     return (
         <div>

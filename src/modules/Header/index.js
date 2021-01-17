@@ -1,19 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import logo from '../../assets/images/logo.png';
 import TopBar from './components/TopBar';
 import NavBar from './components/NavBar.js';
+import {KeywordContext} from '../../contexts/KeywordContext';
 
 function Header(props) {
     const history = useHistory();
-    const { register, handleSubmit, watch, errors } = useForm();
-
+    const { register, handleSubmit, setValue } = useForm();
+    const { keyword, setKeyword } = useContext(KeywordContext);
+    
     const onSearch = data => {
-        if (data.keyword) {
+        if (data) {
+            setKeyword(data.keyword);
             history.push(`/search/${decodeURI(data.keyword)}`)
         }
     }
+
+    useEffect(()=>{
+        setValue('keyword',keyword)
+    },[keyword])
+
 
     return (
         <header id="header">
@@ -32,7 +40,7 @@ function Header(props) {
                         <div className="col-md-6">
                             <div className="search">
                                 <form onSubmit={handleSubmit(onSearch)}>
-                                    <input name="keyword" type="text" defaultValue={props.match && props.match.params.keyword || ''} placeholder="Search..." ref={register} />
+                                    <input name="keyword" type="text" defaultValue={keyword || ''} placeholder="Search..." ref={register} />
                                     <button type="submit"><i className="fa fa-search"></i></button>
                                 </form>
                             </div>

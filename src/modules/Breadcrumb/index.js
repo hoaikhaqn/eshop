@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import Skeleton from 'react-loading-skeleton';
 function Breadcrumb(props) {
+
     return (
         <div className="breadcrumb-wrap">
             <div className="container">
@@ -13,13 +14,14 @@ function Breadcrumb(props) {
                                     <Link to={crumb.link}>{crumb.label}</Link>
                                 </li>
                             )
-                            :
-                            (
-                                <li key={ci} className="breadcrumb-item active">
-                                    {crumb.label}
-                                </li>
-                            )
+                                :
+                                (
+                                    <li key={ci} className="breadcrumb-item active">
+                                        {crumb.label}
+                                    </li>
+                                )
                         })
+
                     }
                 </ul>
             </div>

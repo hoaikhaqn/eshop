@@ -21,10 +21,7 @@ export const removeUserProfile = () => {
 }
 
 export const authenticate = async (user) => {
-    Cookies.set('user_profile', {
-        username: user.username,
-        email: user.email
-    })
+    Cookies.set('user_profile', {...user})
     Cookies.set('refresh_token', user.refreshToken)
     return true;
 }

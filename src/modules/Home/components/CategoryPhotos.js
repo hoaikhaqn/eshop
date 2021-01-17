@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
 
 function CategoryPhotos(props) {
 
@@ -9,7 +10,7 @@ function CategoryPhotos(props) {
                 <div className="row">
                     <div className="col-md-3">
                         {
-                            props.list[0] ? (
+                            props.list && props.list[0] ? (
 
                                 <div className="category-item ch-400">
                                     <img src={props.list[0].image} />
@@ -18,63 +19,63 @@ function CategoryPhotos(props) {
                                     </Link>
 
                                 </div>
-                            ) : null
+                            ) : <Skeleton height={400} />
                         }
                     </div>
                     <div className="col-md-3">
                         {
-                            props.list[1] ? (
+                            props.list && props.list[1] ? (
                                 <div className="category-item ch-250">
                                     <img src={props.list[1].image} />
                                     <Link className="category-name" to={`/category/${props.list[1].slug}/${props.list[1].id}`}>
                                         <p>{props.list[1].name}</p>
                                     </Link>
                                 </div>
-                            ) : null
+                            ) : <Skeleton height={250} />
                         }
                         {
-                            props.list[2] ? (
+                            props.list && props.list[2] ? (
                                 <div className="category-item ch-150">
                                     <img src={props.list[2].image} />
                                     <Link className="category-name" to={`/category/${props.list[2].slug}/${props.list[2].id}`}>
                                         <p>{props.list[2].name}</p>
                                     </Link>
                                 </div>
-                            ) : null
+                            ) : <Skeleton height={150} />
                         }
                     </div>
                     <div className="col-md-3">
                         {
-                            props.list[3] ? (
+                            props.list && props.list[3] ? (
                                 <div className="category-item ch-150">
                                     <img src={props.list[3].image} />
                                     <Link className="category-name" to={`/category/${props.list[3].slug}/${props.list[3].id}`}>
                                         <p>{props.list[3].name}</p>
                                     </Link>
                                 </div>
-                            ) : null
+                            ) : <Skeleton height={150} />
                         }
                         {
-                            props.list[4] ? (
+                            props.list && props.list[4] ? (
                                 <div className="category-item ch-250">
                                     <img src={props.list[4].image} />
                                     <Link className="category-name" to={`/category/${props.list[4].slug}/${props.list[4].id}`}>
                                         <p>{props.list[4].name}</p>
                                     </Link>
                                 </div>
-                            ) : null
+                            ) : <Skeleton height={250} />
                         }
                     </div>
                     <div className="col-md-3">
                         {
-                            props.list[5] ? (
+                            props.list && props.list[5] ? (
                                 <div className="category-item ch-400">
                                     <img src={props.list[5].image} />
                                     <Link className="category-name" to={`/category/${props.list[5].slug}/${props.list[5].id}`}>
                                         <p>{props.list[5].name}</p>
                                     </Link>
                                 </div>
-                            ) : null
+                            ) : <Skeleton height={400} />
                         }
                     </div>
                 </div>

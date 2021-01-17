@@ -3,6 +3,8 @@ import 'firebase/auth';
 import "firebase/firebase-firestore";
 import config from "./config/config.js";
 
+var Timestamp = app.firestore.Timestamp;
+
 class Firebase {
     constructor() {
         app.initializeApp(config.firebase);
@@ -48,6 +50,7 @@ class Firebase {
         };
         await this.auth.signInWithEmailAndPassword(doc.email, doc.password).then((result) => {
             res.result = {
+                userId: result.user.uid,
                 username: result.user.displayName,
                 email: result.user.email,
                 refreshToken: result.user.refreshToken
@@ -110,11 +113,6 @@ class Firebase {
     getDocument(collectionName, id) {
         return new Promise(resolve => {
             this.db.collection(collectionName).doc(id).get().then(doc => {
-                console.log({
-                    id: doc.id,
-                    ...doc.data()
-                });
-
                 resolve({
                     status: true,
                     result: {
@@ -143,6 +141,44 @@ class Firebase {
                     result: data
                 })
             });
+        })
+    }
+    getProductsOrderBy(prop, type) {
+        return new Promise(resolve => {
+            let api = this.db.collection("products")
+                .orderBy(prop, type)
+            api.onSnapshot(function (snapshot) {
+                const data = [];
+                snapshot.docs.forEach(doc => {
+                    data.push({
+                        ...doc.data(),
+                        id: doc.id
+                    });
+                });
+                resolve({
+                    status: true,
+                    result: data
+                })
+            });
+        })
+    }
+    addCartItem(userID,products) {
+        let doc = {
+            userID,
+            products,
+            createdAt: Timestamp.fromDate(new Date())
+        }
+        console.log(doc);
+        return new Promise((resolve, rejects) => {
+            this.db
+                .collection("carts")
+                .add(doc)
+                .then(function () {
+                    resolve(doc);
+                })
+                .catch(function (error) {
+                    rejects();
+                });
         })
     }
 }

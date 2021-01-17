@@ -1,28 +1,43 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { formatCurrency } from '../../utils';
+import { formatCurrency, toSlug } from '../../utils';
 
 import './style.scss';
-function index(props) {
+function ProductItem(props) {
     const product = props.data;
+
+    const addCartItem = (item) => {
+        // if(!cart.find(()=>cartItem.id == item.id)){
+        //     setCart([...cart,{...item,quantity:1}]);
+        // }else{
+        //     let newCart = [...cart]
+        //     let cartIndex = cart.findIndex(()=>cartItem.id == item.id)
+        //     newCart[cartIndex].quantity++;
+        //     setCart(newCart);
+        // }
+    }
+
+
     return (
         <div className="product-item">
-            <div className="product-title">
-                <Link to={`/product/${product.slug}/${product.id}`}>{product.name}</Link>
-            </div>
-            <div className="product-image">
-                <img src={product.images && product.images[0]} alt="Product Image"/>
-                <div className="product-action">
-                    <a href="#"><i className="fa fa-cart-plus" /></a>
-                    <Link to={`/product/${product.slug}/${product.id}`}><i className="fa fa-eye" /></Link>
+            <Link to={`/product/${toSlug(product.name)}/${product.id}`}>
+                <div className="product-image">
+                    <img src={product.images && product.images[0]} alt="Product Image" />
                 </div>
-            </div>
-            <div className="product-price">
-                <h3>{formatCurrency(product.discount)}</h3>
-                <a className="btn" href="#"><i className="fa fa-shopping-cart" />Buy Now</a>
-            </div>
+                <div className="product-meta">
+                    <div className="product-title">{product.name}</div>
+                    <div className="product-price">
+                        <div className="product-price__original">
+                            {formatCurrency(product.price)}
+                        </div>
+                        <div className="product-price__sale">
+                            {formatCurrency(product.discount)}
+                        </div>
+                    </div>
+                </div>
+            </Link>
         </div>
     );
 }
 
-export default index;
+export default ProductItem;

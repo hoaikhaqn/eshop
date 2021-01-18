@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from "react-slick";
 import Skeleton from 'react-loading-skeleton';
-import firebase from '../../../firebase.js';
 import { formatCurrency } from '../../../utils';
-import {getUserProfile} from '../../../constants/auth';
-import {CartContext} from '../../../contexts/CartContext'
+
+
 const SettingsSlider1 = {
     dots: false,
     infinite: true,
@@ -23,21 +22,6 @@ function ProductInfo(props) {
     const { data } = props;
     const [nav1, setNav1] = useState(null)
     const [nav2, setNav2] = useState(null)
-
-    const {cart,setCart} = useContext(CartContext);
-    
-    const addCartItem = () =>{
-        let userProfile = JSON.parse(getUserProfile());
-        let newCart = [...cart];
-        newCart.push(data);
-        setCart(newCart);
-        firebase.addCartItem(userProfile.userId,newCart)
-    }
-
-    useEffect(()=>{
-        console.log(cart);
-        
-    },[cart])
 
     return (
         <div >
@@ -89,7 +73,11 @@ function ProductInfo(props) {
                                         <div className="btn-group btn-group-sm">
                                             {
                                                 data.size.map((item, key) => {
-                                                    return <button key={key} type="button" className="btn">{item}</button>
+                                                    return (
+                                                        <div className="control-group radio-custom" key={key}>
+                                                            <input type="radio" id={`size-${key}`} name="size" />
+                                                            <label className="check-mark" htmlFor={`size-${key}`}>{item}</label>
+                                                        </div>)
                                                 }) || <Skeleton width={150} />
                                             }
                                         </div>
@@ -102,14 +90,18 @@ function ProductInfo(props) {
                                     <div className="btn-group btn-group-sm">
                                         {
                                             data.color.map((item, key) => {
-                                                return <button key={key} type="button" className="btn">{item}</button>
+                                                return (
+                                                    <div className="control-group radio-custom" key={key}>
+                                                        <input type="radio" id={`color-${key}`}  name="color" />
+                                                        <label className="check-mark" htmlFor={`color-${key}`}>{item}</label>
+                                                    </div>)
                                             }) || <Skeleton width={150} />
                                         }
                                     </div>
                                 </div>)
                             }
                             <div className="action">
-                                <a className="btn" onClick={()=>addCartItem()}><i className="fa fa-shopping-cart" />Add to Cart</a>
+                                <a className="btn" onClick={() => props.addCartItem(data)}><i className="fa fa-shopping-cart" />Add to Cart</a>
                                 <a className="btn" href="#"><i className="fa fa-shopping-bag" />Buy Now</a>
                             </div>
                         </div>

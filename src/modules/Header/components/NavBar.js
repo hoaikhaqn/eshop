@@ -1,22 +1,25 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { Link, useHistory } from "react-router-dom";
 import { getUserProfile, removeUserProfile } from '../../../constants/auth.js';
 import firebase from "../../../firebase.js";
-import { setAccessToken } from '../../../constants/auth';
+import { setAccessToken,authenticate } from '../../../constants/auth';
+import { AuthContext } from '../../../contexts/AuthContext';
 
 function NavBar(props) {
   const history = useHistory();
+  const {auth,setAuth} = useContext(AuthContext);
 
-  const [user, setUser] = useState({});
   useEffect(() => {
-    firebase.onAuthChanged(setUser)
+    firebase.onAuthChanged(setAuth)
   }, [])
+  
   useEffect(async () => {
-    if (user.displayName) {
-      const token = await user.getIdToken();
-      setAccessToken(token);
+    if (auth.username) {
+      setAuth(auth);
+      setAccessToken(auth.accessToken);
+      authenticate(auth);
     }
-  }, [user]);
+  }, [auth]);
 
   const logOut = async () => {
     await firebase.signOut();
@@ -48,11 +51,11 @@ function NavBar(props) {
             </div>
             <div className="navbar-nav ml-auto">
               <div className="nav-item dropdown">
-                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">{user.displayName ? `Hi, ${user.displayName}` : 'User Account'}</a>
+                <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">{auth.username ? `Hi, ${auth.username}` : 'User Account'}</a>
                 <div className="dropdown-menu">
-                  {!user.displayName ? <Link to="/login" className="dropdown-item">Login</Link> : ''}
-                  {!user.displayName ? <Link to="/register" className="dropdown-item">Register</Link> : ''}
-                  {user.displayName ? <a className="dropdown-item" onClick={() => logOut()}>Logout</a> : ''}
+                  {!auth.username ? <Link to="/login" className="dropdown-item">Login</Link> : ''}
+                  {!auth.username ? <Link to="/register" className="dropdown-item">Register</Link> : ''}
+                  {auth.username ? <a className="dropdown-item" onClick={() => logOut()}>Logout</a> : ''}
                 </div>
               </div>
             </div>

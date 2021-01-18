@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, useContext } from 'react';
+import { Link, useHistory } from "react-router-dom";
 import Breadcrumb from '../Breadcrumb';
 import ProductInfo from './components/ProductInfo.js';
 import ProductSlider from '../ProductSlider';
 import firebase from '../../firebase';
+import { CartContext } from '../../contexts/CartContext';
+import { AuthContext } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
+
+var object = require('lodash/fp/object');
 
 function ProductDetail(props) {
+    const history = useHistory();
+    const { auth } = useContext(AuthContext);
+    const { cart, setCart } = useContext(CartContext);
     const [category, setCategory] = useState([]);
     const [dataProduct, setDataProduct] = useState(null)
     const [crumb, setCrumb] = useState([])
@@ -31,6 +39,36 @@ function ProductDetail(props) {
             setCrumb([{ link: "/", label: "Home" }, { link: `/category/${category.slug}/${category.id}`, label: category.name }, { label: dataProduct.name }])
     }, [dataProduct, category])
 
+    const CustomToastWithLink = () => (
+        <div className="cart-notification">
+            <span>Added item to your cart!</span>
+            <Link to="/cart">View cart</Link>
+        </div>
+    );
+
+    const addCartItem = (item) => {
+        if (auth.userId) {
+            let newCart = { ...cart };
+            let dupItem = newCart.products.find(item=>item.id == item.id);
+            if(object.isEqual(dupItem,item)){
+                console.log("DUPLICATE");
+                
+            }
+            newCart.products.push({
+                id:item.id,
+                name:item.name,
+                
+            });
+            newCart.totalQuantity++;
+            setCart(newCart);
+            firebase.addCartItem({ ...newCart })
+            toast.dismiss();
+            toast.error(CustomToastWithLink);
+        } else {
+            history.push("/login");
+        }
+    }
+
     return (
         <div>
             <Breadcrumb crumbs={crumb} />
@@ -38,7 +76,7 @@ function ProductDetail(props) {
                 <div className="container">
                     <div className="row">
                         <div className="col-12">
-                            <ProductInfo data={dataProduct || {}} />
+                            <ProductInfo data={dataProduct || {}} addCartItem={addCartItem} />
                             <div className="related-products">
                                 {/* <ProductSlider heading="Related Products" /> */}
                             </div>

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Prompt, Link, Redirect, useHistory } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import firebase from "../../firebase.js";
-import { getUserProfile, authenticate } from "../../constants/auth.js";
+import {AuthContext} from "../../contexts/AuthContext"
 import './style.scss';
 
 export default function Login(props) {
     const history = useHistory();
+    const {auth} = useContext(AuthContext);
     const [submited, setSubmited] = useState(false);
     const { register, handleSubmit, watch, errors } = useForm();
 
@@ -15,9 +16,6 @@ export default function Login(props) {
         let res = await firebase.signIn(data);
         if (res.status) {
             alert("Đăng nhập thành công!")
-            console.log(res.result);
-            
-            authenticate({ ...res.result })
             history.push('/');
         } else {
             alert("Đăng nhập thất bại: " + res.errMsg)
@@ -25,7 +23,7 @@ export default function Login(props) {
         }
     };
 
-    if (!!getUserProfile()) {
+    if (auth.userId) {
         return (
             <Redirect to="/" />
         )

@@ -9,6 +9,29 @@
     }
 }
 
+.radio-custom{
+    margin-right: 5px;
+    input[type="radio"]{
+        position: absolute;
+        top:0;
+        left: 0;
+        opacity: 0;
+    }
+    .check-mark{
+        padding:5px 10px;
+        margin: 0;
+        border:1px solid $primary-color;
+        border-radius: 5px;
+        text-align: center;
+        color: $primary-color;
+        cursor: pointer;
+    }
+    input[type="radio"]:checked ~ .check-mark{
+        background-color:$primary-color;
+        color: #000;
+    }
+}
+
 .form-validate {
     width: 100%;
     margin: 0;
@@ -82,5 +105,16 @@ div.product-item {
 
             }
         }
+    }
+}
+
+// Notification
+.cart-notification{
+    padding:10px 20px;
+    display: flex;
+    justify-content: space-between;
+    a{
+        color: #fff;
+        text-decoration: underline;
     }
 }

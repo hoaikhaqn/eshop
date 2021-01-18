@@ -23,6 +23,23 @@ function ProductInfo(props) {
     const [nav1, setNav1] = useState(null)
     const [nav2, setNav2] = useState(null)
 
+    const handleAddToCart = () => {
+        
+        let newItem = {
+            item,
+            id: item.id,
+            code: `${item.id}${'s'}${'black'}`,
+            name: item.name,
+            color:item.color,
+            size: item.size,
+            price: item.price,
+            originPrice: item.originPrice,
+            quantity: 1,
+        }
+
+        props.addCartItem()
+    }
+
     return (
         <div >
             <div className="product-detail-top">
@@ -101,7 +118,7 @@ function ProductInfo(props) {
                                 </div>)
                             }
                             <div className="action">
-                                <a className="btn" onClick={() => props.addCartItem(data)}><i className="fa fa-shopping-cart" />Add to Cart</a>
+                                <a className="btn" onClick={() => handleAddToCart()}><i className="fa fa-shopping-cart" />Add to Cart</a>
                                 <a className="btn" href="#"><i className="fa fa-shopping-bag" />Buy Now</a>
                             </div>
                         </div>

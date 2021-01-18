@@ -8,7 +8,7 @@ import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
-var object = require('lodash/fp/object');
+var _ = require('lodash');
 
 function ProductDetail(props) {
     const history = useHistory();
@@ -19,19 +19,20 @@ function ProductDetail(props) {
     const [crumb, setCrumb] = useState([])
 
     useEffect(() => {
-        async function fetchData() {
+        let unmounted = false;
+        (async function fetchData() {
             let idProduct = props.match.params.id;
             let res1 = await firebase.getDocument("products", idProduct)
-            if (res1.status) {
+            if (!unmounted && res1.status) {
                 setDataProduct(res1.result)
             }
             let categoryID = res1.result.categoryID;
             let res2 = await firebase.getDocument("category", categoryID)
-            if (res2.status == true) {
+            if (!unmounted && res2.status == true) {
                 setCategory(res2.result)
             }
-        }
-        fetchData()
+        })()
+        return () => { unmounted = true };
     }, [])
 
     useEffect(() => {
@@ -46,20 +47,18 @@ function ProductDetail(props) {
         </div>
     );
 
-    const addCartItem = (item) => {
+    const addCartItem = (newItem) => {
         if (auth.userId) {
             let newCart = { ...cart };
-            let dupItem = newCart.products.find(item=>item.id == item.id);
-            if(object.isEqual(dupItem,item)){
-                console.log("DUPLICATE");
-                
+
+            let oldItem = newCart.products.find(item => item.id == newItem.id);
+
+            if(oldItem && newItem.code == oldItem.code){
+                oldItem.quantity = oldItem.quantity + newItem.quantity;
+            }else{
+                newCart.products.push(newItem);
             }
-            newCart.products.push({
-                id:item.id,
-                name:item.name,
-                
-            });
-            newCart.totalQuantity++;
+            newCart.totalQuantity = newCart.totalQuantity  + newItem.quantity;
             setCart(newCart);
             firebase.addCartItem({ ...newCart })
             toast.dismiss();

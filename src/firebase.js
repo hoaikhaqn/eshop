@@ -18,7 +18,7 @@ class Firebase {
     }
     onAuthChanged(setUser) {
         this.auth.onAuthStateChanged(async (res) => {
-            if(res){
+            if (res) {
                 const token = await res.getIdToken();
                 var user = {
                     userId: res.uid,
@@ -179,17 +179,17 @@ class Firebase {
                     snapshot.forEach(function (doc) {
                         console.log(doc.id);
                         resolve({
-                            status:true,
-                            result:{
+                            status: true,
+                            result: {
                                 cartId: doc.id,
                                 ...doc.data()
                             }
                         })
                     });
-                }else{
+                } else {
                     resolve({
-                        status:false,
-                        result:{}
+                        status: false,
+                        result: {}
                     })
                 }
             })
@@ -202,10 +202,12 @@ class Firebase {
                 .then(function (snapshot) {
                     if (!snapshot.empty) {
                         snapshot.forEach(function (doc) {
-                            currentCart = {
-                                cartId: doc.id,
-                                ...doc.data()
-                            };
+                            if(doc){
+                                currentCart = {
+                                    cartId: doc.id,
+                                    ...doc.data()
+                                };
+                            }
                         });
                     }
                 })
@@ -216,11 +218,14 @@ class Firebase {
                     ...cart,
                     createdAt: Timestamp.fromDate(new Date())
                 }
+                console.log("->",doc);
                 this.db
                     .collection("carts")
                     .add(doc)
                     .then(function () {
-                        resolve(doc);
+                        resolve({
+                            status:true
+                        });
                     })
                     .catch(function (error) {
                         rejects();
@@ -239,12 +244,48 @@ class Firebase {
                     })
                     .then(function (res) {
                         console.log(res);
-                        resolve();
+                        resolve({
+                            status:true
+                        });
                     })
                     .catch(function (error) {
                         rejects();
                     });
             }
+        })
+
+    }
+    updateCartItem(cart) {
+        return new Promise(async (resolve, rejects) => {
+            this.db
+                .collection("carts")
+                .doc(cart.id)
+                .set({
+                    ...cart,
+                    updatedAt: Timestamp.fromDate(new Date()),
+                })
+                .then(function (res) {
+                    console.log(res);
+                    resolve();
+                })
+                .catch(function (error) {
+                    rejects();
+                });
+        })
+
+    }
+    removeCart(cartId) {
+        return new Promise(resolve => {
+            this.db.collection(collectionName).doc(cartId).get().then(doc => {
+                doc.ref.delete();
+                resolve({
+                    status: true,
+                    result: {
+                        cartId: doc.id,
+                        ...doc.data()
+                    }
+                });
+            });
         })
     }
 }

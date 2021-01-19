@@ -22,23 +22,56 @@ function ProductInfo(props) {
     const { data } = props;
     const [nav1, setNav1] = useState(null)
     const [nav2, setNav2] = useState(null)
+    const [quantity, setQuantity] = useState(1)
+    const [color, setColor] = useState()
+    const [size, setSize] = useState()
+    const [cartItem, setcartItem] = useState()
+
+    const onChangeQuanity = (e) => {
+        let regex = new RegExp(/[1-9]\d*/g);
+        if (e.target.value == '' || regex.test(e.target.value)) {
+            setQuantity(e.target.value != '' ? Number(e.target.value) : '')
+        }
+    }
+    const onBlurQuanity = () => {
+        if (quantity == '') {
+            setQuantity(1)
+        }
+    }
+    const HandleQuanity = (action) => {
+        if (action == 'increase') {
+            setQuantity(quantity + 1)
+        }
+        if (action == 'decrease' && quantity > 1) {
+            setQuantity(quantity - 1)
+        }
+    }
+    const onChangeSize = (e) => {
+        setSize(e.target.value)
+    }
+    const onChangeColor = (e) => {
+        setColor(e.target.value)
+    }
 
     const handleAddToCart = () => {
-        
-        let newItem = {
-            item,
-            id: item.id,
-            code: `${item.id}${'s'}${'black'}`,
-            name: item.name,
-            color:item.color,
-            size: item.size,
-            price: item.price,
-            originPrice: item.originPrice,
-            quantity: 1,
-        }
-
-        props.addCartItem()
+        setcartItem({
+            id: data.id,
+            code: `${data.id}${color}${size}`,
+            name: data.name,
+            image: data.images && data.images[0] || '',
+            price: data.discount,
+            originPrice: data.price,
+            color,
+            size,
+            quantity,
+        })
     }
+
+    useEffect(() => {
+        if (cartItem) {
+            props.addCartItem(cartItem)
+        }
+    }, [cartItem])
 
     return (
         <div >
@@ -78,9 +111,9 @@ function ProductInfo(props) {
                             <div className="quantity">
                                 <h4>Quantity:</h4>
                                 <div className="qty">
-                                    <button className="btn-minus"><i className="fa fa-minus" /></button>
-                                    <input type="text" defaultValue={1} />
-                                    <button className="btn-plus"><i className="fa fa-plus" /></button>
+                                    <button onClick={() => HandleQuanity("decrease")} className="btn-minus"><i className="fa fa-minus" /></button>
+                                    <input type="text" onBlur={() => onBlurQuanity()} onChange={(e) => onChangeQuanity(e)} value={quantity} name="sampleInput" />
+                                    <button onClick={() => HandleQuanity("increase")} className="btn-plus"><i className="fa fa-plus" /></button>
                                 </div>
                             </div>
                             {
@@ -92,7 +125,7 @@ function ProductInfo(props) {
                                                 data.size.map((item, key) => {
                                                     return (
                                                         <div className="control-group radio-custom" key={key}>
-                                                            <input type="radio" id={`size-${key}`} name="size" />
+                                                            <input type="radio" onChange={onChangeSize} value={item} id={`size-${key}`} name="size" />
                                                             <label className="check-mark" htmlFor={`size-${key}`}>{item}</label>
                                                         </div>)
                                                 }) || <Skeleton width={150} />
@@ -109,7 +142,7 @@ function ProductInfo(props) {
                                             data.color.map((item, key) => {
                                                 return (
                                                     <div className="control-group radio-custom" key={key}>
-                                                        <input type="radio" id={`color-${key}`}  name="color" />
+                                                        <input type="radio" onChange={onChangeColor} value={item} id={`color-${key}`} name="color" />
                                                         <label className="check-mark" htmlFor={`color-${key}`}>{item}</label>
                                                     </div>)
                                             }) || <Skeleton width={150} />

@@ -47,22 +47,26 @@ function ProductDetail(props) {
         </div>
     );
 
-    const addCartItem = (newItem) => {
+    const addCartItem = async (newItem) => {
         if (auth.userId) {
             let newCart = { ...cart };
 
-            let oldItem = newCart.products.find(item => item.id == newItem.id);
-
-            if(oldItem && newItem.code == oldItem.code){
+            let oldItem = newCart.products.find(item => item.code == newItem.code);
+            
+            if(oldItem){
                 oldItem.quantity = oldItem.quantity + newItem.quantity;
             }else{
                 newCart.products.push(newItem);
             }
+            newCart.totalAmount = newCart.totalAmount  + newItem.price*newItem.quantity;
             newCart.totalQuantity = newCart.totalQuantity  + newItem.quantity;
+            
             setCart(newCart);
-            firebase.addCartItem({ ...newCart })
-            toast.dismiss();
-            toast.error(CustomToastWithLink);
+            let res = await firebase.addCartItem({ ...newCart })
+            if(res.status){
+                toast.dismiss();
+                toast.error(CustomToastWithLink);
+            }
         } else {
             history.push("/login");
         }

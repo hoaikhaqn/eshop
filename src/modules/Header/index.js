@@ -38,7 +38,8 @@ function Header(props) {
                     setCart({
                         userId:auth.userId,
                         products:[],
-                        totalQuantity:0
+                        totalQuantity:0,
+                        totalAmount:0
                     });
                 }
             }
@@ -70,10 +71,10 @@ function Header(props) {
                         </div>
                         <div className="col-md-3">
                             <div className="user">
-                                <a href="cart.html" className="btn cart">
+                                <Link to="/cart" className="btn cart">
                                     <i className="fa fa-shopping-cart"></i>
-                                    <span>({cart && cart.totalQuantity || 0})</span>
-                                </a>
+                                    <span> ({cart && cart.totalQuantity || 0})</span>
+                                </Link>
                             </div>
                         </div>
                     </div>

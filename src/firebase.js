@@ -133,6 +133,24 @@ class Firebase {
             });
         })
     }
+    addDocument(collectionName, doc) {
+        return new Promise(resolve => {
+            this.db.collection(collectionName).add(doc)
+                .then(doc => {
+                    resolve({
+                        status: true,
+                        result: {
+                            id: doc.id,
+                            ...doc.data()
+                        }
+                    })
+                })
+                .catch(errs => rejects({
+                    status: false,
+                    result: errs
+                }));
+        })
+    }
     getProductsByCategory(collectionName, id) {
         return new Promise(resolve => {
             let api = this.db.collection(collectionName)
@@ -177,7 +195,6 @@ class Firebase {
             this.db.collection("carts").where("userId", "==", userId).get().then(function (snapshot) {
                 if (!snapshot.empty) {
                     snapshot.forEach(function (doc) {
-                        console.log(doc.id);
                         resolve({
                             status: true,
                             result: {
@@ -195,78 +212,17 @@ class Firebase {
             })
         })
     }
-    addCartItem(cart) {
-        return new Promise(async (resolve, rejects) => {
-            var currentCart;
-            await this.db.collection("carts").where("userId", "==", cart.userId).get()
-                .then(function (snapshot) {
-                    if (!snapshot.empty) {
-                        snapshot.forEach(function (doc) {
-                            if(doc){
-                                currentCart = {
-                                    cartId: doc.id,
-                                    ...doc.data()
-                                };
-                            }
-                        });
-                    }
-                })
-            // Check cart exists
-            if (!currentCart) {
-                // Add new cart
-                let doc = {
-                    ...cart,
-                    createdAt: Timestamp.fromDate(new Date())
-                }
-                console.log("->",doc);
-                this.db
-                    .collection("carts")
-                    .add(doc)
-                    .then(function () {
-                        resolve({
-                            status:true
-                        });
-                    })
-                    .catch(function (error) {
-                        rejects();
-                    });
-            } else {
-                // Update cart
-                this.db
-                    .collection("carts")
-                    .doc(currentCart.cartId)
-                    .set({
-                        products: cart.products,
-                        totalQuantity: cart.totalQuantity,
-                        updatedAt: Timestamp.fromDate(new Date()),
-                        userId: currentCart.userId,
-                        createdAt: currentCart.createdAt
-                    })
-                    .then(function (res) {
-                        console.log(res);
-                        resolve({
-                            status:true
-                        });
-                    })
-                    .catch(function (error) {
-                        rejects();
-                    });
-            }
-        })
-
-    }
-    updateCartItem(cart) {
+    updateCart(cart) {
         return new Promise(async (resolve, rejects) => {
             this.db
                 .collection("carts")
-                .doc(cart.id)
+                .doc(cart.cartId)
                 .set({
                     ...cart,
                     updatedAt: Timestamp.fromDate(new Date()),
                 })
                 .then(function (res) {
-                    console.log(res);
-                    resolve();
+                    resolve({ status: true });
                 })
                 .catch(function (error) {
                     rejects();

@@ -31,7 +31,6 @@ function Header(props) {
         (async function fetchData(){
             if(!cart && auth.userId){
                 const res = await firebase.getCartByUserId(auth.userId);
-                console.log("cart db: ",res);
                 if(res.status){
                     setCart(res.result);
                 }else{

@@ -8,6 +8,14 @@ export const toCapitalize = (string) => {
     if (typeof string !== 'string') return ''
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
+export const getTotalCart = (products) => {
+    var total = products.reduce((acc, item) => {
+        acc.totalQuantity = (acc.totalQuantity || 0) + item.quantity;
+        acc.totalAmount = (acc.totalAmount || 0) + item.price * item.quantity;
+        return acc
+    }, {})
+    return total
+}
 export const toSlug = (string) => {
     var slug;
     slug = string.toLowerCase();

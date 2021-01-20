@@ -1,13 +1,61 @@
 import React, { useState, useEffect, useContext } from 'react';
+import {Link} from 'react-router-dom';
 import firebase from '../../firebase';
 import { CartContext } from '../../contexts/CartContext';
-import { formatCurrency } from '../../utils';
+import { toSlug, formatCurrency,getTotalCart } from '../../utils';
 
+import './style.scss';
 function Cart(props) {
     const { cart, setCart } = useContext(CartContext);
-    const onChangeQuantity = (e) => {
+    const [quantityItem,setQuantityItem] = useState();
 
+    const onChangeQuantity = (e,itemId) => {
+        let regex = new RegExp(/[1-9]\d*/g);
+        if (e.target.value == '' || regex.test(e.target.value)) {
+            setQuantityItem({
+                id:itemId,
+                value:e.target.value
+            })
+        }
     }
+    const onBlurQuanity = (e,itemId) => {
+        if (e.target.value == '') {
+            setQuantityItem({
+                id:itemId,
+                value: 1
+            })
+        }
+    }
+    const HandleQuanity = (action,itemId) => {
+        let item = cart.products.find(item=>item.id == itemId);
+        if (action == 'increase') {
+            setQuantityItem({
+                id:itemId,
+                value:item.quantity + 1
+            })
+        }
+        if (action == 'decrease' && item.quantity > 1) {
+            setQuantityItem({
+                id:itemId,
+                value:item.quantity - 1
+            })
+        }
+    }
+
+    useEffect(()=>{
+        if(quantityItem){
+            let newCart = {...cart};
+            let item = newCart.products.find(item=>item.id == quantityItem.id);
+            item.quantity = quantityItem.value;
+            newCart = {
+                ...newCart,
+                ...getTotalCart(newCart.products)
+            }
+            setCart(newCart);
+            firebase.updateCart(newCart)
+        }
+    },[quantityItem])
+    
     const handelRemoveCartItem = async (cartItem) => {
         let newCart = {...cart};
         newCart.totalQuantity = newCart.totalQuantity - cartItem.quantity;
@@ -15,10 +63,12 @@ function Cart(props) {
 
         let indexItem = newCart.products.findIndex(item => item.id == cartItem.id);
         newCart.products.splice(indexItem,1);
-
-        console.log("newCart",newCart);
+        newCart = {
+            ...newCart,
+            ...getTotalCart(newCart.products)
+        }
         setCart(newCart);
-        firebase.updateCartItem(newCart);
+        firebase.updateCart(newCart);
     }
     return (
         <div className="cart-page">
@@ -29,34 +79,37 @@ function Cart(props) {
                             <h3><b>Your cart</b> ({cart && cart.totalQuantity || 0} items) </h3>
                             <div className="table-responsive">
                                 <table className="table table-bordered">
-                                    <tbody className="align-middle">
+                                    <tbody className="align-middle cart-container">
                                         {
                                             cart && cart.products.map((cartItem, key) => {
                                                 return (
                                                     <tr key={key} id={cartItem.id}>
                                                         <td>
-                                                            <div className="img">
-                                                                <img src={cartItem.image} alt="Image" />
-                                                                <div>
-                                                                    <b style={{ display: "block", textAlign: "left" }}>{cartItem.name}</b>
-                                                                    <p>Size: {cartItem.size} | Color: {cartItem.color}</p>
+                                                            <div className="product-meta">
+                                                                <Link to={`/product/${toSlug(cartItem.name)}/${cartItem.id}`}>
+                                                                <div className="product-img">
+                                                                    <img src={cartItem.image} alt="Image" />
                                                                 </div>
-
+                                                                </Link>
+                                                                <div style={{textAlign:"left"}}>
+                                                                    <Link to={`/product/${toSlug(cartItem.name)}/${cartItem.id}`}><b style={{ display: "block" }}>{cartItem.name}</b></Link> 
+                                                                    <p>{cartItem.color ? cartItem.color : ''}{cartItem.color && cartItem.size ? ' - ':''}{cartItem.size ? cartItem.size : ''}</p>
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <p>{formatCurrency(cartItem.price)}</p>
-                                                            <span style={{ textDecoration: "line-through" }}>{formatCurrency(cartItem.originPrice)}</span>
+                                                            <p style={{ marginBottom:"0"}}>{formatCurrency(cartItem.price)}</p>
+                                                            <span style={{ textDecoration: "line-through",fontSize:"13px" }}>{formatCurrency(cartItem.originPrice)}</span>
                                                         </td>
                                                         <td>
                                                             <div className="qty">
-                                                                <button className="btn-minus"><i className="fa fa-minus" /></button>
-                                                                <input type="text" value={cartItem.quantity} onChange={onChangeQuantity} />
-                                                                <button className="btn-plus"><i className="fa fa-plus" /></button>
+                                                                <button className="btn-minus" onClick={()=>HandleQuanity('decrease',cartItem.id)}><i className="fa fa-minus" /></button>
+                                                                <input type="text" value={cartItem.quantity} onChange={(e)=>onChangeQuantity(e,cartItem.id)} onBlur={(e)=>onBlurQuanity(e,cartItem.id)}/>
+                                                                <button className="btn-plus" onClick={()=>HandleQuanity('increase',cartItem.id)}><i className="fa fa-plus" /></button>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <p>{formatCurrency(cartItem.price * cartItem.quantity)}</p>
+                                                            <p style={{ marginBottom:"0"}}>{formatCurrency(cartItem.price * cartItem.quantity)}</p>
                                                         </td>
                                                         <td><button onClick={() => handelRemoveCartItem(cartItem)}><i className="fa fa-trash" /></button></td>
                                                     </tr>
@@ -75,12 +128,12 @@ function Cart(props) {
                                     <div className="cart-summary">
                                         <div className="cart-content">
                                             <h1>Cart Summary</h1>
-                                            <p>Sub Total<span>{formatCurrency(1200000)}</span></p>
+                                            <p>Sub Total<span>{formatCurrency(cart && cart.totalAmount || 0)}</span></p>
                                             <p>Shipping<span>{formatCurrency(15000)}</span></p>
-                                            <b>Total<span>{formatCurrency(1215000)}</span></b>
+                                            <b>Total<span>{formatCurrency(15000 + (cart && cart.totalAmount || 0))}</span></b>
                                         </div>
                                         <div className="cart-btn">
-                                            <button>Back to home</button>
+                                            <Link to="/"><button>Back to home</button></Link>
                                             <button>Checkout</button>
                                         </div>
                                     </div>

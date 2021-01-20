@@ -22,10 +22,9 @@ function ProductInfo(props) {
     const { data } = props;
     const [nav1, setNav1] = useState(null)
     const [nav2, setNav2] = useState(null)
-    const [quantity, setQuantity] = useState(1)
+    const [quantity, setQuantity] = useState(1);
     const [color, setColor] = useState()
     const [size, setSize] = useState()
-    const [cartItem, setcartItem] = useState()
 
     const onChangeQuanity = (e) => {
         let regex = new RegExp(/[1-9]\d*/g);
@@ -54,24 +53,18 @@ function ProductInfo(props) {
     }
 
     const handleAddToCart = () => {
-        setcartItem({
+        props.addCartItem({
             id: data.id,
             code: `${data.id}${color}${size}`,
             name: data.name,
             image: data.images && data.images[0] || '',
             price: data.discount,
             originPrice: data.price,
-            color,
-            size,
+            color: color || null,
+            size: size || null,
             quantity,
         })
     }
-
-    useEffect(() => {
-        if (cartItem) {
-            props.addCartItem(cartItem)
-        }
-    }, [cartItem])
 
     return (
         <div >

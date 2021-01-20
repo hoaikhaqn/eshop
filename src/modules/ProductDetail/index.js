@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useHistory } from "react-router-dom";
+import { toast } from 'react-toastify';
+
+import firebase from '../../firebase';
+
 import Breadcrumb from '../Breadcrumb';
 import ProductInfo from './components/ProductInfo.js';
 import ProductSlider from '../ProductSlider';
-import firebase from '../../firebase';
+
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
-import { toast } from 'react-toastify';
+import { getTotalCart } from '../../utils';
+
 
 var _ = require('lodash');
 
@@ -50,19 +55,21 @@ function ProductDetail(props) {
     const addCartItem = async (newItem) => {
         if (auth.userId) {
             let newCart = { ...cart };
-
             let oldItem = newCart.products.find(item => item.code == newItem.code);
-            
+            // Check exists
             if(oldItem){
                 oldItem.quantity = oldItem.quantity + newItem.quantity;
             }else{
-                newCart.products.push(newItem);
+                newCart.products.unshift(newItem);
             }
-            newCart.totalAmount = newCart.totalAmount  + newItem.price*newItem.quantity;
-            newCart.totalQuantity = newCart.totalQuantity  + newItem.quantity;
-            
+            // Update cart
+            newCart = {
+                ...newCart,
+                ...getTotalCart(newCart.products)
+            }
             setCart(newCart);
-            let res = await firebase.addCartItem({ ...newCart })
+            // Save cart to db
+            let res = await firebase.updateCart(newCart)
             if(res.status){
                 toast.dismiss();
                 toast.error(CustomToastWithLink);

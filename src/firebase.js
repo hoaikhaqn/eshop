@@ -135,7 +135,10 @@ class Firebase {
     }
     addDocument(collectionName, doc) {
         return new Promise(resolve => {
-            this.db.collection(collectionName).add(doc)
+            this.db.collection(collectionName).add({
+                ...doc,
+                createdAt: Timestamp.fromDate(new Date()),
+            })
                 .then(doc => {
                     resolve({
                         status: true,

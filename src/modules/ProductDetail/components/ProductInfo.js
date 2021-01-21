@@ -9,14 +9,14 @@ const SettingsSlider1 = {
     infinite: true,
     autoplay: false,
     slidesToShow: 1,
-    slidesToScroll: 1
+    slidesToScroll: 1,
 };
 const SettingsSlider2 = {
     slidesToShow: 4,
     slidesToScroll: 1,
     infinite: false,
     dots: false,
-    focusOnSelect: true
+    focusOnSelect: true,
 };
 function ProductInfo(props) {
     const { data } = props;
@@ -66,9 +66,13 @@ function ProductInfo(props) {
         })
     }
 
+    const SlideImage = ({ key, url, size }) => {
+        return <div key={key} className={`slider-image-item ${size}`} style={{ backgroundImage: `url(${url})` }}></div>
+    }
+
     return (
         <div >
-            <div className="product-detail-top">
+            <div className="product-detail product-detail-top">
                 <div className="row">
                     <div className="col-md-5">
                         <Slider className="product-slider-single normal-slider"
@@ -77,9 +81,9 @@ function ProductInfo(props) {
                             ref={slider => setNav1(slider)}
                         >
                             {
-                                data.images && data.images.map((image, key) => {
-                                    return <img key={key} src={image} alt="Product Image" />
-                                }) || <Skeleton width={350} height={350} />
+                                data && data.images && data.images.map((image, key) => {
+                                    return <SlideImage key={key} url={image} size={'large'} />
+                                }) || <Skeleton height={445} />
                             }
                         </Slider>
                         <Slider className="product-slider-single-nav normal-slider"
@@ -88,66 +92,81 @@ function ProductInfo(props) {
                             ref={slider => setNav2(slider)}
                         >
                             {
-                                data.images && data.images.map((image, key) => {
-                                    return <img key={key} src={image} alt="Product Image" />
-                                }) || <Skeleton width={70} height={70} />
+                                data && data.images && data.images.map((image, key) => {
+                                    return <SlideImage key={key} url={image} size={'small'} />
+                                }) || <Skeleton height={90} />
                             }
                         </Slider>
                     </div>
                     <div className="col-md-7">
-                        <div className="product-content">
-                            <div className="title"><h2>{data.name || <Skeleton width={200} />}</h2></div>
-                            <div className="price">
-                                <h4>Price:</h4>
-                                <p>{data.discount && formatCurrency(data.discount) || <Skeleton width={150} />}<span>{data.price && formatCurrency(data.price) || <Skeleton width={150} />}</span></p>
-                            </div>
-                            <div className="quantity">
-                                <h4>Quantity:</h4>
-                                <div className="qty">
-                                    <button onClick={() => HandleQuanity("decrease")} className="btn-minus"><i className="fa fa-minus" /></button>
-                                    <input type="text" onBlur={() => onBlurQuanity()} onChange={(e) => onChangeQuanity(e)} value={quantity} name="sampleInput" />
-                                    <button onClick={() => HandleQuanity("increase")} className="btn-plus"><i className="fa fa-plus" /></button>
-                                </div>
-                            </div>
-                            {
-                                data.size && (
-                                    <div className="p-size">
-                                        <h4>Size:</h4>
-                                        <div className="btn-group btn-group-sm">
-                                            {
-                                                data.size.map((item, key) => {
-                                                    return (
-                                                        <div className="control-group radio-custom" key={key}>
-                                                            <input type="radio" onChange={onChangeSize} value={item} id={`size-${key}`} name="size" defaultChecked={key == 0 ? true:''}/>
-                                                            <label className="check-mark" htmlFor={`size-${key}`}>{item}</label>
-                                                        </div>)
-                                                }) || <Skeleton width={150} />
-                                            }
+                        {
+                            data && (
+                                <div className="product-content">
+                                    <div className="title"><h2>{data.name}</h2></div>
+                                    <div className="price">
+                                        <h4>Price:</h4>
+                                        <p>
+                                            {data.price && formatCurrency(data.price)}
+                                            <span>{data.originalPrice && formatCurrency(data.originalPrice)}</span>
+                                            {data.discount && data.discount != 0 ? <span className="discount">- {data.discount}%</span> : null}
+                                        </p>
+                                    </div>
+                                    <div className="quantity">
+                                        <h4>Quantity:</h4>
+                                        <div className="qty">
+                                            <button onClick={() => HandleQuanity("decrease")} className="btn-minus"><i className="fa fa-minus" /></button>
+                                            <input type="text" onBlur={() => onBlurQuanity()} onChange={(e) => onChangeQuanity(e)} value={quantity} name="sampleInput" />
+                                            <button onClick={() => HandleQuanity("increase")} className="btn-plus"><i className="fa fa-plus" /></button>
                                         </div>
                                     </div>
-                                )
-                            }
-                            {
-                                data.color && (<div className="p-color">
-                                    <h4>Color:</h4>
-                                    <div className="btn-group btn-group-sm">
-                                        {
-                                            data.color.map((item, key) => {
-                                                return (
-                                                    <div className="control-group radio-custom" key={key}>
-                                                        <input type="radio" onChange={onChangeColor} value={item} id={`color-${key}`} name="color" defaultChecked={key == 0 ? true:''}/>
-                                                        <label className="check-mark" htmlFor={`color-${key}`}>{item}</label>
-                                                    </div>)
-                                            }) || <Skeleton width={150} />
-                                        }
+                                    {
+                                        data.size && 
+                                        <div className="p-size">
+                                            <h4>Size:</h4>
+                                            <div className="btn-group btn-group-sm">
+                                                {
+                                                    data.size.map((item, key) => {
+                                                        return (
+                                                            <div className="control-group radio-custom" key={key}>
+                                                                <input type="radio" onChange={onChangeSize} value={item} id={`size-${key}`} name="size" defaultChecked={key == 0 ? true : ''} />
+                                                                <label className="check-mark" htmlFor={`size-${key}`}>{item}</label>
+                                                            </div>)
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    {
+                                        data.size && 
+                                        <div className="p-color">
+                                            <h4>Color:</h4>
+                                            <div className="btn-group btn-group-sm">
+                                                {
+                                                    data.color.map((item, key) => {
+                                                        return (
+                                                            <div className="control-group radio-custom" key={key}>
+                                                                <input type="radio" onChange={onChangeColor} value={item} id={`color-${key}`} name="color" defaultChecked={key == 0 ? true : ''} />
+                                                                <label className="check-mark" htmlFor={`color-${key}`}>{item}</label>
+                                                            </div>)
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    <div className="action">
+                                        <a className="btn" onClick={() => handleAddToCart()}><i className="fa fa-shopping-cart" />Add to Cart</a>
+                                        <a className="btn" href="#"><i className="fa fa-shopping-bag" />Buy Now</a>
                                     </div>
-                                </div>)
-                            }
-                            <div className="action">
-                                <a className="btn" onClick={() => handleAddToCart()}><i className="fa fa-shopping-cart" />Add to Cart</a>
-                                <a className="btn" href="#"><i className="fa fa-shopping-bag" />Buy Now</a>
-                            </div>
-                        </div>
+                                </div>
+                            )
+                            ||
+                            (
+                                <div className="product-content">
+                                    <Skeleton height={20} count={2} />
+                                    <Skeleton height={100} />
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -166,7 +185,7 @@ function ProductInfo(props) {
                     </ul>
                     <div className="tab-content">
                         <div id="description" className="container tab-pane active">
-                            {data.description || <Skeleton count={5} />}
+                            {data && data.description || <Skeleton count={5} />}
                         </div>
                         <div id="specification" className="container tab-pane fade">
                             <h4>Product specification</h4>

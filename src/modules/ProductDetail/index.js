@@ -6,11 +6,9 @@ import firebase from '../../firebase';
 
 import Breadcrumb from '../Breadcrumb';
 import ProductInfo from './components/ProductInfo.js';
-import ProductSlider from '../ProductSlider';
-
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
-import { getTotalCart } from '../../utils';
+import { getTotalCart, toSlug } from '../../utils';
 
 
 var _ = require('lodash');
@@ -19,31 +17,24 @@ function ProductDetail(props) {
     const history = useHistory();
     const { auth } = useContext(AuthContext);
     const { cart, setCart } = useContext(CartContext);
-    const [category, setCategory] = useState([]);
-    const [dataProduct, setDataProduct] = useState(null)
-    const [crumb, setCrumb] = useState([])
+    const [product, setProduct] = useState(null)
+    const [crumb, setCrumb] = useState()
 
     useEffect(() => {
-        let unmounted = false;
         (async function fetchData() {
             let idProduct = props.match.params.id;
             let res1 = await firebase.getDocument("products", idProduct)
-            if (!unmounted && res1.status) {
-                setDataProduct(res1.result)
-            }
-            let categoryID = res1.result.categoryID;
-            let res2 = await firebase.getDocument("category", categoryID)
-            if (!unmounted && res2.status == true) {
-                setCategory(res2.result)
+            if (res1.status) {
+                setProduct(res1.result)
             }
         })()
-        return () => { unmounted = true };
     }, [])
 
     useEffect(() => {
-        if (category && dataProduct)
-            setCrumb([{ link: "/", label: "Home" }, { link: `/category/${category.slug}/${category.id}`, label: category.name }, { label: dataProduct.name }])
-    }, [dataProduct, category])
+        if (product) {
+            setCrumb([{ link: "/", label: "Home" }, { link: `/category/${toSlug(product.category.name)}/${product.category.id}`, label: product.category.name }, { label: product.name }])
+        }
+    }, [product])
 
     const CustomToastWithLink = () => (
         <div className="cart-notification">
@@ -68,8 +59,8 @@ function ProductDetail(props) {
                 ...newCart,
                 ...getTotalCart(newCart.products)
             }
-            console.log("CART: ",newCart);
-            
+            console.log("CART: ", newCart);
+
             // Save DB
             var res = await firebase.updateCart(newCart)
             if (res.status) {
@@ -89,7 +80,7 @@ function ProductDetail(props) {
                 <div className="container">
                     <div className="row">
                         <div className="col-12">
-                            <ProductInfo data={dataProduct || {}} addCartItem={addCartItem} />
+                            <ProductInfo data={product} addCartItem={addCartItem} />
                             <div className="related-products">
                                 {/* <ProductSlider heading="Related Products" /> */}
                             </div>

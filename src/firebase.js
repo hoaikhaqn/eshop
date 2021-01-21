@@ -239,6 +239,8 @@ class Firebase {
     updateCart(cart) {
         return new Promise(async (resolve, rejects) => {
             var currentCart;
+            console.log("cart",cart);
+            
             await this.db.collection("carts").where("userId", "==", cart.userId).get()
                 .then(function (snapshot) {
                     if (!snapshot.empty) {

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import firebase from '../../firebase';
+import { AuthContext } from '../../contexts/AuthContext';
 import { CartContext } from '../../contexts/CartContext';
 import { toSlug, formatCurrency, getTotalCart } from '../../utils';
 
 import './style.scss';
 function Cart(props) {
+    const history = useHistory();
+    const { auth } = useContext(AuthContext);
     const { cart, setCart } = useContext(CartContext);
     const [quantityItem, setQuantityItem] = useState();
 
@@ -42,6 +45,12 @@ function Cart(props) {
         }
     }
 
+    useEffect(()=>{
+        if(!auth){
+            history.push("/login")
+        }
+    },[auth])
+
     useEffect(() => {
         if (quantityItem) {
             let newCart = { ...cart };
@@ -52,7 +61,7 @@ function Cart(props) {
                 ...getTotalCart(newCart.products)
             }
             setCart(newCart);
-            firebase.updateCart("carts", newCart)
+            firebase.updateCart(newCart)
         }
     }, [quantityItem])
 
@@ -68,7 +77,7 @@ function Cart(props) {
             ...getTotalCart(newCart.products)
         }
         setCart(newCart);
-        firebase.updateCart("carts", newCart);
+        firebase.updateCart(newCart);
     }
     return (
         <div className="cart-page">
@@ -147,13 +156,21 @@ function Cart(props) {
                     ) 
                     :
                     (
-                        <div id="error-page" className="col-md-8 mx-auto text-center">
-                            <div className="box" style={{marginBottom:"40px"}}>
-                                <h3>Your cart is empty</h3>
-                                <p>Looks like you have no items in your shopping cart.</p>
-                                <Link to='/' className="btn btn-template-outlined">Go to Home</Link>
+                        cart && cart.products.length == 0 ? (
+                            <div id="error-page" className="col-md-8 mx-auto text-center">
+                                <div className="box" style={{marginBottom:"40px"}}>
+                                    <h3>Your cart is empty</h3>
+                                    <p>Looks like you have no items in your shopping cart.</p>
+                                    <Link to='/' className="btn btn-template-outlined">Go to Home</Link>
+                                </div>
                             </div>
-                        </div>
+                        ):(
+                            <div id="error-page" className="col-md-8 mx-auto text-center">
+                                <div className="box" style={{marginBottom:"40px"}}>
+                                    <h3>Please wait! Your cart is loading...</h3>
+                                </div>
+                            </div>
+                        )
                     )
                 }
 

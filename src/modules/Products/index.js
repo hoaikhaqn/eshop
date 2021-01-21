@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import Breadcrumb from '../Breadcrumb';
 import ProductList from './components/ProductList.js';
 import firebase from '../../firebase';
@@ -6,26 +7,28 @@ import { KeywordContext } from '../../contexts/KeywordContext';
 
 function Products(props) {
     const [sortby, setSortby] = useState({ value: "", text: "Sort by" });
-    const [lastCrumb, setLastCrumb] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [crumb, setCrumb] = useState([])
+    const [lastCrumb, setLastCrumb] = useState();
+    const [products, setProducts] = useState();
+    const [crumb, setCrumb] = useState()
     const { keyword, setKeyword } = useContext(KeywordContext);
-    
+
     // Category page
     useEffect(() => {
         (async function fetchData() {
             if (props.match.params.id) {
                 let categoryID = props.match.params.id;
-
-                let res1 = await firebase.getProductsByCategory("products", categoryID)
-                if (res1.status == true) {
-                    setProducts(res1.result)
-                }
-
-                let res2 = await firebase.getDocument("category", categoryID)
-                if (res2.status == true) {
-                    setLastCrumb(res2.result.name)
-                }
+                Promise.all([
+                    firebase.getProductsByCategory("products", categoryID),
+                    firebase.getDocument("category", categoryID)
+                ]).then((res)=>{
+                    const [res1,res2] = res;
+                    if (res1.status == true) {
+                        setProducts(res1.result)
+                    }
+                    if (res2.status == true) {
+                        setLastCrumb(res2.result.name)
+                    }
+                })
             }
         })();
     }, [])
@@ -41,7 +44,7 @@ function Products(props) {
                 }
 
                 let res = await firebase.getProductsByKeyword("products", keywordParams)
-
+                
                 if (res.status == true) {
                     setProducts(res.result)
                     setLastCrumb(`Search results: "${keywordParams}"`)
@@ -89,7 +92,9 @@ function Products(props) {
 
     // Set crumbs
     useEffect(() => {
-        setCrumb([{ link: "/", label: "Home" }, { label: lastCrumb }])
+        if(lastCrumb){
+            setCrumb([{ link: "/", label: "Home" }, { label: lastCrumb }])
+        }
     }, [lastCrumb])
 
     const onHandleSort = async (value) => {
@@ -117,9 +122,8 @@ function Products(props) {
             <div className="product-view">
                 <div className="container">
                     <div className="row">
-
                         {
-                            !props.match.params.keyword ? (
+                            products && products.length > 0? (
                                 <div className="col-12">
                                     <div className="product-view-top">
                                         <div className="row justify-content-end">
@@ -140,14 +144,36 @@ function Products(props) {
                                     <ProductList list={products} />
                                 </div>
                             ) : (
-                                    <div className="col-12">
-                                        <div id="error-page" className="col-md-8 mx-auto text-center">
-                                            <div className="box">
-                                                <h3>Oops – No result for "{keyword}".</h3>
-                                                <p>Don’t give up! Check the spelling, or try something less specific.</p>
+                                (products && products.length == 0 && props.match.params.keyword) ? (
+                                        <div className="col-12">
+                                            <div id="error-page" className="col-md-8 mx-auto text-center">
+                                                <div className="box">
+                                                    <h3>Oops – No result for "{keyword}".</h3>
+                                                    <p>Don’t give up! Check the spelling, or try something less specific.</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="col-12">
+                                            <div className="row">
+                                                <div className="col-12" style={{marginBottom:"30px"}}>
+                                                    <Skeleton height={100}/>
+                                                </div>
+                                                <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <Skeleton height={300}/>
+                                                </div>
+                                                <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <Skeleton height={300}/>
+                                                </div>
+                                                <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <Skeleton height={300}/>
+                                                </div>
+                                                <div className="col-12 col-sm-6 col-md-4 col-lg-3">
+                                                    <Skeleton height={300}/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
                                 )
                         }
                         {/* Side Bar Start */}

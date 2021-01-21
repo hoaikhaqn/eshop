@@ -1,0 +1,5 @@
+#loading{display:flex;align-items:center;justify-content:center;height:100vh}#loading img{background-color:transparent}
+
+
+
+.cart-container .product-meta{display:grid;grid-template-columns:80px 1fr;grid-column-gap:10px}.cart-container .product-meta .product-img{width:80px;height:80px;background-color:#eee}.cart-container .product-meta .product-img img{width:100%;height:100%;object-fit:contain}

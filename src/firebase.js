@@ -269,11 +269,8 @@ class Firebase {
             } else {
                 this.db.collection("carts").doc(currentCart.cartId)
                     .set({
-                        products: cart.products,
-                        totalQuantity: cart.totalQuantity,
+                        ...cart,
                         updatedAt: Timestamp.fromDate(new Date()),
-                        userId: currentCart.userId,
-                        createdAt: currentCart.createdAt
                     })
                     .then(function (res) {
                         resolve({status: true});

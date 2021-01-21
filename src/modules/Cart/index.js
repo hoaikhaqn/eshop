@@ -3,6 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import firebase from '../../firebase';
 import { AuthContext } from '../../contexts/AuthContext';
 import { CartContext } from '../../contexts/CartContext';
+import { getUserProfile } from '../../constants/auth';
 import { toSlug, formatCurrency, getTotalCart } from '../../utils';
 
 import './style.scss';
@@ -46,10 +47,12 @@ function Cart(props) {
     }
 
     useEffect(()=>{
-        if(!auth){
+        let user = JSON.parse(getUserProfile());
+
+        if(!user.username){
             history.push("/login")
         }
-    },[auth])
+    },[])
 
     useEffect(() => {
         if (quantityItem) {
@@ -80,6 +83,7 @@ function Cart(props) {
         firebase.updateCart(newCart);
     }
     return (
+
         <div className="cart-page">
             <div className="container">
                 {
@@ -139,9 +143,9 @@ function Cart(props) {
                                             <div className="cart-summary">
                                                 <div className="cart-content">
                                                     <h1>Cart Summary</h1>
-                                                    <p>Sub Total<span>{formatCurrency(cart && cart.totalAmount || 0)}</span></p>
+                                                    <p>Sub Total<span>{cart && formatCurrency(cart.totalAmount || 0)}</span></p>
                                                     <p>Shipping<span>{formatCurrency(15000)}</span></p>
-                                                    <b>Total<span>{formatCurrency(15000 + (cart && cart.totalAmount || 0))}</span></b>
+                                                    <b>Total<span>{cart && formatCurrency(15000 + (cart.totalAmount || 0))}</span></b>
                                                 </div>
                                                 <div className="cart-btn">
                                                     <Link to="/"><button>Back to home</button></Link>

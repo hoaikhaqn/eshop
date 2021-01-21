@@ -47,9 +47,8 @@ function Cart(props) {
     }
 
     useEffect(()=>{
-        let user = JSON.parse(getUserProfile());
-
-        if(!user.username){
+        let user = getUserProfile() && JSON.parse(getUserProfile()) || null;
+        if(!user){
             history.push("/login")
         }
     },[])

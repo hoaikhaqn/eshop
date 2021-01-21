@@ -133,11 +133,12 @@ class Firebase {
             });
         })
     }
-    addDocument(collectionName, doc) {
+    setDocument(collectionName, doc) {
         return new Promise(resolve => {
-            this.db.collection(collectionName).add({
-                ...doc,
+            this.db.collection(collectionName).set({
                 createdAt: Timestamp.fromDate(new Date()),
+                ...doc,
+                updatedAt: Timestamp.fromDate(new Date()),
             })
                 .then(doc => {
                     resolve({
@@ -152,6 +153,20 @@ class Firebase {
                     status: false,
                     result: errs
                 }));
+        })
+    }
+    removeDocument(docId) {
+        return new Promise(resolve => {
+            this.db.collection(collectionName).doc(docId).get().then(doc => {
+                doc.ref.delete();
+                resolve({
+                    status: true,
+                    result: {
+                        docId: doc.id,
+                        ...doc.data()
+                    }
+                });
+            });
         })
     }
     getProductsByCategory(collectionName, id) {
@@ -213,38 +228,6 @@ class Firebase {
                     })
                 }
             })
-        })
-    }
-    updateCart(cart) {
-        return new Promise(async (resolve, rejects) => {
-            this.db
-                .collection("carts")
-                .doc(cart.cartId)
-                .set({
-                    ...cart,
-                    updatedAt: Timestamp.fromDate(new Date()),
-                })
-                .then(function (res) {
-                    resolve({ status: true });
-                })
-                .catch(function (error) {
-                    rejects();
-                });
-        })
-
-    }
-    removeCart(cartId) {
-        return new Promise(resolve => {
-            this.db.collection(collectionName).doc(cartId).get().then(doc => {
-                doc.ref.delete();
-                resolve({
-                    status: true,
-                    result: {
-                        cartId: doc.id,
-                        ...doc.data()
-                    }
-                });
-            });
         })
     }
 }

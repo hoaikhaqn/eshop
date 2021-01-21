@@ -69,7 +69,7 @@ function ProductDetail(props) {
             }
             setCart(newCart);
             // Save cart to db
-            let res = await firebase.updateCart(newCart)
+            let res = await firebase.setDocument("carts",newCart)
             if(res.status){
                 toast.dismiss();
                 toast.error(CustomToastWithLink);

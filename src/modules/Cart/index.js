@@ -52,7 +52,7 @@ function Cart(props) {
                 ...getTotalCart(newCart.products)
             }
             setCart(newCart);
-            firebase.updateCart(newCart)
+            firebase.setDocument("carts",newCart)
         }
     },[quantityItem])
     
@@ -68,7 +68,7 @@ function Cart(props) {
             ...getTotalCart(newCart.products)
         }
         setCart(newCart);
-        firebase.updateCart(newCart);
+        firebase.setDocument("carts",newCart);
     }
     return (
         <div className="cart-page">

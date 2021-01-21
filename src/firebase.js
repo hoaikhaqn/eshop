@@ -167,17 +167,11 @@ class Firebase {
                 }));
         })
     }
-    removeDocument(docId) {
+    removeDocument(collectionName,docId) {
         return new Promise(resolve => {
             this.db.collection(collectionName).doc(docId).get().then(doc => {
                 doc.ref.delete();
-                resolve({
-                    status: true,
-                    result: {
-                        docId: doc.id,
-                        ...doc.data()
-                    }
-                });
+                resolve({status: true,});
             });
         })
     }

@@ -4,14 +4,13 @@ import ProductList from './components/ProductList.js';
 import firebase from '../../firebase';
 import { KeywordContext } from '../../contexts/KeywordContext';
 
-import { toCapitalize } from '../../utils';
-
 function Products(props) {
     const [sortby, setSortby] = useState({ value: "", text: "Sort by" });
     const [lastCrumb, setLastCrumb] = useState([]);
     const [products, setProducts] = useState([]);
     const [crumb, setCrumb] = useState([])
     const { keyword, setKeyword } = useContext(KeywordContext);
+    
     // Category page
     useEffect(() => {
         (async function fetchData() {

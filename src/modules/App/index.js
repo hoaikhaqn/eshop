@@ -10,7 +10,6 @@ import { AuthProvider } from '../../contexts/AuthContext';
 import { KeywordProvider } from '../../contexts/KeywordContext';
 import { CartProvider } from '../../contexts/CartContext';
 
-
 import 'react-toastify/dist/ReactToastify.css';
 import "slick-carousel/slick/slick-theme.scss";
 import "slick-carousel/slick/slick.scss";
@@ -20,7 +19,7 @@ function App(props) {
 
   useEffect(() => {
     firebase.isInitialized().then(val => setFirebaseInitialized(val))
-  })
+  },[])
 
   return firebaseInitialized !== false ? (
     <AuthProvider>

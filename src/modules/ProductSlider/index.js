@@ -7,13 +7,13 @@ const SliderSettings = {
     autoplay: true,
     infinite: true,
     dots: false,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     responsive: [
         {
             breakpoint: 992,
             settings: {
-                slidesToShow: 2,
+                slidesToShow: 3,
             }
         },
         {

@@ -57,23 +57,26 @@ function ProductDetail(props) {
             let newCart = { ...cart };
             let oldItem = newCart.products.find(item => item.code == newItem.code);
             // Check exists
-            if(oldItem){
-                oldItem.quantity = oldItem.quantity + newItem.quantity;
-            }else{
+            if (!oldItem) {
+                // Add new item
                 newCart.products.unshift(newItem);
+            } else {
+                // Update quantity
+                oldItem.quantity = oldItem.quantity + newItem.quantity;
             }
-            // Update cart
             newCart = {
                 ...newCart,
                 ...getTotalCart(newCart.products)
             }
-            setCart(newCart);
-            // Save cart to db
-            let res = await firebase.setDocument("carts",newCart)
-            if(res.status){
+            console.log("CART: ",newCart);
+            
+            // Save DB
+            var res = await firebase.updateCart(newCart)
+            if (res.status) {
                 toast.dismiss();
                 toast.error(CustomToastWithLink);
             }
+            setCart(newCart);
         } else {
             history.push("/login");
         }

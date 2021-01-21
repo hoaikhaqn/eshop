@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
-import logo from '../../assets/images/logo.png';
-import TopBar from './components/TopBar';
-import NavBar from './components/NavBar.js';
+import firebase from '../../firebase';
 import {AuthContext} from '../../contexts/AuthContext';
 import {KeywordContext} from '../../contexts/KeywordContext';
 import {CartContext} from '../../contexts/CartContext';
-import firebase from '../../firebase';
+import TopBar from './components/TopBar.js';
+import NavBar from './components/NavBar';
+import { authenticate,removeUserProfile } from '../../constants/auth';
 
+import logo from '../../assets/images/logo.png';
 function Header(props) {
     const history = useHistory();
     const { register, handleSubmit, setValue } = useForm();
-    const { auth } = useContext(AuthContext);
+    const { auth, setAuth } = useContext(AuthContext);
     const { keyword, setKeyword } = useContext(KeywordContext);
     const { cart, setCart } = useContext(CartContext);
     
@@ -23,33 +24,45 @@ function Header(props) {
         }
     }
 
-    useEffect(()=>{
-        setValue('keyword',keyword)
-    },[keyword])
+    const handleLogOut = async () => {
+        await firebase.signOut();
+        setAuth(null);
+        setCart(null);
+        removeUserProfile();
+        history.push("/login");
+    }
+
+    useEffect(()=>firebase.onAuthStateChanged(setAuth),[])
 
     useEffect(()=>{
         (async function fetchData(){
-            if(!cart && auth.userId){
-                const res = await firebase.getCartByUserId(auth.userId);
-                if(res.status){
-                    setCart(res.result);
-                }else{
-                    setCart({
-                        userId:auth.userId,
-                        products:[],
-                        totalQuantity:0,
-                        totalAmount:0
-                    });
+            if(auth){
+                authenticate(auth);
+                if(!cart && auth.userId){
+                    const res = await firebase.getCartByUserId(auth.userId);
+                    if(res.status){
+                        setCart(res.result);
+                    }else{
+                        setCart({
+                            userId:auth.userId,
+                            products:[],
+                            totalQuantity:0,
+                            totalAmount:0
+                        });
+                    }
                 }
             }
         })()
     },[auth])
 
+    useEffect(()=>{
+        setValue('keyword',keyword)
+    },[keyword])
 
     return (
         <header id="header">
             <TopBar />
-            <NavBar />
+            <NavBar handleLogOut={handleLogOut}/>
             <div className="bottom-bar">
                 <div className="container">
                     <div className="row align-items-center">

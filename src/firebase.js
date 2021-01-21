@@ -16,7 +16,7 @@ class Firebase {
             this.auth.onAuthStateChanged(resolved)
         })
     }
-    onAuthChanged(setUser) {
+    onAuthStateChanged(setUser) {
         this.auth.onAuthStateChanged(async (res) => {
             if (res) {
                 const token = await res.getIdToken();
@@ -28,7 +28,7 @@ class Firebase {
                     accessToken: token,
                 };
             }
-            setUser(user || {})
+            setUser(user)
         })
     }
     async signUp(doc) {
@@ -133,20 +133,32 @@ class Firebase {
             });
         })
     }
-    setDocument(collectionName, doc) {
-        return new Promise(resolve => {
-            this.db.collection(collectionName).set({
+    addDocument(collectionName, doc) {
+        return new Promise((resolve, rejects) => {
+            this.db.collection(collectionName).add({
                 createdAt: Timestamp.fromDate(new Date()),
+                ...doc,
+            })
+                .then(doc => {
+                    resolve({
+                        status: true
+                    })
+                })
+                .catch(errs => rejects({
+                    status: false,
+                    result: errs
+                }));
+        })
+    }
+    setDocument(collectionName, doc) {
+        return new Promise((resolve, rejects) => {
+            this.db.collection(collectionName).doc(doc.id).set({
                 ...doc,
                 updatedAt: Timestamp.fromDate(new Date()),
             })
                 .then(doc => {
                     resolve({
-                        status: true,
-                        result: {
-                            id: doc.id,
-                            ...doc.data()
-                        }
+                        status: true
                     })
                 })
                 .catch(errs => rejects({
@@ -228,6 +240,52 @@ class Firebase {
                     })
                 }
             })
+        })
+    }
+    updateCart(cart) {
+        return new Promise(async (resolve, rejects) => {
+            var currentCart;
+            await this.db.collection("carts").where("userId", "==", cart.userId).get()
+                .then(function (snapshot) {
+                    if (!snapshot.empty) {
+                        snapshot.forEach(function (doc) {
+                            if (doc) {
+                                currentCart = {
+                                    cartId: doc.id,
+                                    ...doc.data()
+                                };
+                            }
+                        });
+                    }
+                })
+            if (!currentCart) {
+                this.db.collection("carts")
+                    .add({
+                        ...cart,
+                        createdAt: Timestamp.fromDate(new Date())
+                    })
+                    .then(function () {
+                        resolve({status: true});
+                    })
+                    .catch(function (error) {
+                        rejects();
+                    });
+            } else {
+                this.db.collection("carts").doc(currentCart.cartId)
+                    .set({
+                        products: cart.products,
+                        totalQuantity: cart.totalQuantity,
+                        updatedAt: Timestamp.fromDate(new Date()),
+                        userId: currentCart.userId,
+                        createdAt: currentCart.createdAt
+                    })
+                    .then(function (res) {
+                        resolve({status: true});
+                    })
+                    .catch(function (error) {
+                        rejects();
+                    });
+            }
         })
     }
 }

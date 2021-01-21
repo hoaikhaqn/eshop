@@ -8,11 +8,11 @@ class TopBar extends Component {
           <div className="row">
             <div className="col-sm-6">
               <i className="fa fa-envelope"></i>
-              support@email.com
+              hoaikhaqn1996@gmail.com
                     </div>
             <div className="col-sm-6">
               <i className="fa fa-phone-alt"></i>
-              +012-345-6789
+              (+84) 86 554 7870
             </div>
           </div>
         </div>

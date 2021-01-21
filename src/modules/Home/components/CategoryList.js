@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
+import {toSlug} from '../../../utils';
 
 function CategoryList(props) {
     return (
@@ -31,7 +32,7 @@ function CategoryList(props) {
                     props.list ? props.list.map((category, key) => {
                         return (
                             <li className="nav-item" key={key}>
-                                <Link className="nav-link" to={`/category/${category.slug}/${category.id}`}><i className="fa fa-tags"></i>{category.name}</Link>
+                                <Link className="nav-link" to={`/category/${toSlug(category.name)}/${category.id}`}><i className="fa fa-tags"></i>{category.name}</Link>
                             </li>
                         )
                     }) :

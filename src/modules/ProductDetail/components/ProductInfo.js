@@ -118,7 +118,7 @@ function ProductInfo(props) {
                                                 data.size.map((item, key) => {
                                                     return (
                                                         <div className="control-group radio-custom" key={key}>
-                                                            <input type="radio" onChange={onChangeSize} value={item} id={`size-${key}`} name="size" />
+                                                            <input type="radio" onChange={onChangeSize} value={item} id={`size-${key}`} name="size" defaultChecked={key == 0 ? true:''}/>
                                                             <label className="check-mark" htmlFor={`size-${key}`}>{item}</label>
                                                         </div>)
                                                 }) || <Skeleton width={150} />
@@ -135,7 +135,7 @@ function ProductInfo(props) {
                                             data.color.map((item, key) => {
                                                 return (
                                                     <div className="control-group radio-custom" key={key}>
-                                                        <input type="radio" onChange={onChangeColor} value={item} id={`color-${key}`} name="color" />
+                                                        <input type="radio" onChange={onChangeColor} value={item} id={`color-${key}`} name="color" defaultChecked={key == 0 ? true:''}/>
                                                         <label className="check-mark" htmlFor={`color-${key}`}>{item}</label>
                                                     </div>)
                                             }) || <Skeleton width={150} />

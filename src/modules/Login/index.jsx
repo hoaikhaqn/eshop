@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Prompt, Link, Redirect, useHistory } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import firebase from "../../firebase.js";
-import {AuthContext} from "../../contexts/AuthContext"
+import {AuthContext} from "../../contexts/AuthContext";
 import './style.scss';
 
 export default function Login(props) {
@@ -15,7 +15,6 @@ export default function Login(props) {
         setSubmited(true);
         let res = await firebase.signIn(data);
         if (res.status) {
-            alert("Đăng nhập thành công!")
             history.push('/');
         } else {
             alert("Đăng nhập thất bại: " + res.errMsg)
@@ -23,7 +22,7 @@ export default function Login(props) {
         }
     };
 
-    if (auth.userId) {
+    if (auth && auth.userId) {
         return (
             <Redirect to="/" />
         )
@@ -46,10 +45,6 @@ export default function Login(props) {
                                     <label>Password</label>
                                     <input name="password" className={`form-control ${errors && errors.password ? 'is-invalid' : ''}`} type="password" ref={register({ required: true })} />
                                     {errors.password && <span className="msg-err">This field is required</span>}
-                                </div>
-                                <div className="custom-control custom-checkbox">
-                                    <input type="checkbox" className="custom-control-input" id="newaccount" />
-                                    <label className="custom-control-label" htmlFor="newaccount">Keep me signed in</label>
                                 </div>
                                 <div style={{ marginBottom: "1rem" }}>
                                     <Link to="/register">Don't have an account yet?</Link>

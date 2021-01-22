@@ -32,7 +32,11 @@ function Header(props) {
         history.push("/login");
     }
 
-    useEffect(()=>firebase.onAuthStateChanged(setAuth),[])
+    useEffect(()=>{
+        if(!auth){
+            firebase.onAuthStateChanged(setAuth)
+        }
+    },[])
 
     useEffect(()=>{
         (async function fetchData(){

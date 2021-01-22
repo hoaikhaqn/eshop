@@ -3,9 +3,10 @@ import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom"
 import { ToastContainer } from 'react-toastify';
 import firebase from "../../firebase.js";
 import Loading from "../Loading";
-import routes from '../../constants/routes';
+import {RoutesUser,RoutesAmin} from '../../constants/routes';
 import Header from '../Header';
 import Footer from '../Footer';
+import AdminLayout from '../Admin';
 import { AuthProvider } from '../../contexts/AuthContext';
 import { KeywordProvider } from '../../contexts/KeywordContext';
 import { CartProvider } from '../../contexts/CartContext';
@@ -21,20 +22,41 @@ function App(props) {
     firebase.isInitialized().then(val => setFirebaseInitialized(val))
   },[])
 
+  const RenderMainPages = () =>{
+    return RoutesUser.map((route, index) => {
+      return <Route key={index} path={route.path} exact={route.exact} component={props => route.main(props)} />
+    })
+  }
+
+  const RenderAdminPages = () =>{
+    return RoutesAmin.map((route, index) => {
+      if(!route.defaultLayout)
+      return <Route key={index} path={route.path} exact component={props => route.main(props)} />
+    })
+  }
+
   return firebaseInitialized !== false ? (
     <AuthProvider>
-      <CartProvider >
-        <KeywordProvider>
           <Router basename={process.env.PUBLIC_URL}>
-            <Header />
             <Switch>
-              {
-                routes.map((route, index) => {
-                  return <Route key={index} path={route.path} exact={route.exact} component={props => route.main(props)} />
-                })
-              }
+              <Route exact path="/admin/:path?">
+                <Switch>
+                  {RenderAdminPages()}
+                  <AdminLayout auth={!!firebaseInitialized}/>
+                </Switch>
+              </Route>
+              <Route>
+                <CartProvider >
+                  <KeywordProvider>
+                    <Header />
+                    <Switch>
+                      {RenderMainPages()}
+                    </Switch>
+                    <Footer />
+                  </KeywordProvider>
+                </CartProvider>
+              </Route>
             </Switch>
-            <Footer />
             <ToastContainer 
               position="bottom-right"
               autoClose={5000}
@@ -47,8 +69,6 @@ function App(props) {
               pauseOnHover
             />
           </Router>
-        </KeywordProvider>
-      </CartProvider>
     </AuthProvider>
   ) : <Loading />
 }

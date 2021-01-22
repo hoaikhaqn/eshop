@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Home from '../modules/Home';
 import Login from '../modules/Login/index.jsx';
 import Register from '../modules/Register/index.jsx';
@@ -8,7 +9,23 @@ import Cart from '../modules/Cart';
 import Checkout from '../modules/Checkout';
 import Notfound404 from '../modules/Notfound404';
 
-const routes = [{
+// Admin
+import AdminDashboard from '../modules/Admin/modules/Dashboard';
+import AdminProducts from '../modules/Admin/modules/Products';
+
+export const RoutesAmin = [{
+    path: '/admin',
+    exact: true,
+    defaultLayout:true,
+    main: (props) => < AdminDashboard  {...props} />
+},{
+    path: '/admin/products',
+    exact: true,
+    defaultLayout:true,
+    main: (props) => < AdminProducts  {...props} />
+}]
+
+export const RoutesUser = [{
     path: '/',
     exact: true,
     main: (props) => < Home  {...props} />
@@ -46,7 +63,4 @@ const routes = [{
     main: () => < Checkout />
 }, {
     main: () => < Notfound404 />
-}
-]
-
-export default routes;
+}]

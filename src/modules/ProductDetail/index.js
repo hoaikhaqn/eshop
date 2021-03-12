@@ -44,7 +44,7 @@ function ProductDetail(props) {
     );
 
     const addCartItem = async (newItem) => {
-        if (auth.userId) {
+        if (auth && auth.userId) {
             let newCart = { ...cart };
             let oldItem = newCart.products.find(item => item.code == newItem.code);
             // Check exists
